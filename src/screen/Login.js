@@ -25,7 +25,7 @@ function Login() {
       if(token){
         setNavigate(true);
       }
-    }, []);
+    });
 
     const login = async() => {
       if(user.email !="" && user.password !=""){
@@ -81,7 +81,7 @@ function Login() {
     }
 
   return (
-    <MDBContainer className="my-5 gradient-form">
+    <MDBContainer fluid className="gradient-form login-form">
 
       <MDBRow>
 

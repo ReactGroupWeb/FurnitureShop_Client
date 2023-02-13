@@ -1,25 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, NavLink } from 'react-router-dom'
 import axios from "axios";
-
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import { Carousel } from 'react-responsive-carousel';
+import "./styles/product-detail.css";
 
 export default function ProductDetail() {
 const params = useParams();
 const [product, setProduct] = useState([]);
 const [product_images, setProductImages] = useState([]);
+// const [relatedProducts, setRelatedProducts] = useState([]);
 const productID = params.id;
-
+const productByCategory = useParams();
     useEffect(() => {
         axios.get(`http://localhost:5000/api/v1/products/${productID}`)
-            .then(res => {
-                console.log(res);
-                setProduct(res.data);
-                setProductImages(res.data.images);
-            })
-            .catch(err => {
-                console.log(err);
-            });
-    }, []);
+        .then(res => {
+            setProduct(res.data);
+            setProductImages(res.data.images);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    });
+
+    // useEffect(() => {
+    //     // fetch the related product by category
+    //     axios.get(`http://localhost:5000/api/v1/products/get/related-product?category=${productByCategory}`)
+    //     .then(res => setRelatedProducts(res.data))
+    //     .catch(err => console.log(err));
+    // });
+
+    // console.log(productByCategory);
 
     return (
         <div>
@@ -37,26 +48,36 @@ const productID = params.id;
                         </div>
                         <div className="row">
                             <div className="col-lg-3 col-md-3">
-                                <ul className="nav nav-tabs" role="tablist">
-                                    {product_images.map(product_imgs => (
-                                        <li className="nav-item" key={product_imgs}>
-                                            <NavLink className="nav-link" data-toggle="tab" href="#tabs-1" role="tab">
-                                                <div className="product__thumb__pic set-bg" style={{ backgroundImage: `url(${product_imgs})` }}>
-                                                </div>
-                                            </NavLink>
-                                        </li>
-                                    ))}
-                                </ul>
+                                
                             </div>
                             <div className="col-lg-6 col-md-9">
-                                <div className="tab-content">
-                                    <div className="tab-pane active" id="tabs-1" role="tabpanel">
-                                        <div className="product__details__pic__item">
-                                            <img src={product.image} alt />
+                            
+                                {product_images.length === 0 ?
+                                    <>
+                                        <div className="product__thumb__pic set-bg product-img">
+                                            <img src={product.image} />
                                         </div>
-                                    </div>
-                    
-                                </div>
+                                    </>
+                                    :
+                                    <>
+                                        <Carousel 
+                                            startIndex={0}
+                                            showStatus={false} 
+                                            showIndicators={false} 
+                                            showArrows={false} 
+                                            infiniteLoop={true}
+                                            autoPlay={true} 
+                                            interval={3000}
+                                        >
+                                            {product_images.map(product_imgs => (
+                                                <div className="product__thumb__pic set-bg product-img" key={product_imgs}>
+                                                    <img src={product_imgs} />
+                                                </div>    
+                                            ))}
+                                        </Carousel>
+                                    </>
+                                }
+                            
                             </div>
                         </div>
                     </div>
@@ -104,7 +125,6 @@ const productID = params.id;
 
                                     <div className="product__details__btns__option">
                                         <a href="#"><i className="fa fa-heart" /> add to wishlist</a>
-                                        <a href="#"><i className="fa fa-exchange" /> Add To Compare</a>
                                     </div>
                                     
                                     <div className="product__details__last__option">
@@ -117,11 +137,10 @@ const productID = params.id;
                                                     Categories: 
                                                 </span> 
                                                 <span className="ms-1">
-                                                    {(product && product.category) ? product.category.name : product.name}
+                                                    {(product && product.category) ? product.category.name : ""}
                                                 </span>
                                             
                                             </li>
-                                            <li><span>Tag:</span> Clothes, Skin, Body</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -257,47 +276,50 @@ const productID = params.id;
                         </div>
                     </div>
                     <div className="row">
-                        <div className="col-lg-3 col-md-6 col-sm-6 col-sm-6">
-                            <div className="product__item">
-                                <div className="product__item__pic set-bg" data-setbg="img/product/product-1.jpg">
-                                    <span className="label">New</span>
-                                    <ul className="product__hover">
-                                        <li><a href="#"><img src="img/icon/heart.png" alt /></a></li>
-                                        <li><a href="#"><img src="img/icon/compare.png" alt /> <span>Compare</span></a></li>
-                                        <li><a href="#"><img src="img/icon/search.png" alt /></a></li>
-                                    </ul>
-                                </div>
-                                <div className="product__item__text">
-                                    <h6>Piqué Biker Jacket</h6>
-                                    <a href="#" className="add-cart">+ Add To Cart</a>
-                                    <div className="rating">
-                                        <i className="fa fa-star-o" />
-                                        <i className="fa fa-star-o" />
-                                        <i className="fa fa-star-o" />
-                                        <i className="fa fa-star-o" />
-                                        <i className="fa fa-star-o" />
+                        {/* {relatedProducts.map((product) => (
+
+                       
+                            <div className="col-lg-3 col-md-6 col-sm-6 col-sm-6" >
+                                <div className="product__item" key={product.id}>
+                                    <div className="product__item__pic set-bg" style={{backgroundImage : `url(${product.image})`}}>
+                                        <span className="label">New</span>
+                                        <ul className="product__hover">
+                                            <li><a href="#"><img src="img/icon/heart.png" alt /></a></li>
+                                            <li><a href="#"><img src="img/icon/search.png" alt /></a></li>
+                                        </ul>
                                     </div>
-                                    <h5>$67.24</h5>
-                                    <div className="product__color__select">
-                                        <label htmlFor="pc-1">
-                                            <input type="radio" id="pc-1" />
-                                        </label>
-                                        <label className="active black" htmlFor="pc-2">
-                                            <input type="radio" id="pc-2" />
-                                        </label>
-                                        <label className="grey" htmlFor="pc-3">
-                                            <input type="radio" id="pc-3" />
-                                        </label>
+                                    <div className="product__item__text">
+                                        <h6>Piqué Biker Jacket</h6>
+                                        <a href="#" className="add-cart">+ Add To Cart</a>
+                                        <div className="rating">
+                                            <i className="fa fa-star-o" />
+                                            <i className="fa fa-star-o" />
+                                            <i className="fa fa-star-o" />
+                                            <i className="fa fa-star-o" />
+                                            <i className="fa fa-star-o" />
+                                        </div>
+                                        <h5>$67.24</h5>
+                                        <div className="product__color__select">
+                                            <label htmlFor="pc-1">
+                                                <input type="radio" id="pc-1" />
+                                            </label>
+                                            <label className="active black" htmlFor="pc-2">
+                                                <input type="radio" id="pc-2" />
+                                            </label>
+                                            <label className="grey" htmlFor="pc-3">
+                                                <input type="radio" id="pc-3" />
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+
+                        ))} */}
                         <div className="col-lg-3 col-md-6 col-sm-6 col-sm-6">
                             <div className="product__item">
                                 <div className="product__item__pic set-bg" data-setbg="img/product/product-2.jpg">
                                     <ul className="product__hover">
                                         <li><a href="#"><img src="img/icon/heart.png" alt /></a></li>
-                                        <li><a href="#"><img src="img/icon/compare.png" alt /> <span>Compare</span></a></li>
                                         <li><a href="#"><img src="img/icon/search.png" alt /></a></li>
                                     </ul>
                                 </div>

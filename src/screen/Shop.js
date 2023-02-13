@@ -31,7 +31,7 @@ export default function Shop(){
         .catch(err =>{
             console.log(err);
         })
-    });
+    }, []);
 
     const [cart, setCart] = useState([]);
     const [wishlist, setWishlist] = useState({});
@@ -43,15 +43,31 @@ export default function Shop(){
    
     const handleAddToCart = async (productId, proQty) => {
         try {
-            const response = await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
-                user: userId,
-                product: productId,
-                instance: 'cart',
-                quantity: proQty
-              
-            });
+
+            // get all the data of cart item by each user id
+            const response = await axios.get(`http://localhost:5000/api/v1/shoppingcarts/cart-item/${userId}`);
+            const items = response.data;
+
+            // check the exist cart item that is already exist
+            const existCartItem = items.find(item => item.product._id === productId);
+            if(existCartItem){
+                existCartItem.quantity += proQty;
+                await axios.put(`http://localhost:5000/api/v1/shoppingcarts/update-cart/${existCartItem._id}`, {
+                    quantity: existCartItem.quantity
+                });
+            }
+            else{
+                await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
+                    user: userId,
+                    product: productId,
+                    instance: 'cart',
+                    quantity: proQty
+                
+                });
+            }
 
             setCart(response.data);
+            return response;
         } catch (err) {
             console.log(err)
         }
@@ -66,6 +82,7 @@ export default function Shop(){
             });
 
             setWishlist({...wishlist, [productId]: response.data });
+            return response;
         } catch (err) {
             console.log(err)
         }

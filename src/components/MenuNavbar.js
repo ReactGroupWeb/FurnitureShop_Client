@@ -12,12 +12,12 @@ export default function MenuNavbar({ click }) {
       axios.get('http://localhost:5000/api/v1/companys')
       .then(res => setCompanys(res.data))
       .catch(err => console.log(err))
-  });
+  }, []);
   useEffect(() => {
       axios.get('http://localhost:5000/api/v1/categories')
       .then(res => setCategories(res.data))
       .catch(err => console.log(err));
-  }) ;
+  }, []);
 
 
   const [navigate, setNavigate] = useState(false);
@@ -26,12 +26,19 @@ export default function MenuNavbar({ click }) {
 
   const userId = user ? user.user.id : "";
   const [countNumCartItem, setCountNumCartItem] = useState(0);
+  const [countNumWishlistItem, setCountNumWishlistItem] = useState(0);
 
   useEffect(() => {
     axios.get(`http://localhost:5000/api/v1/shoppingcarts/get/cart_item_count/${userId}`)
     .then(res => setCountNumCartItem(res.data))
     .catch(err => console.log(err));
   });
+
+  useEffect(() => {
+    axios.get(`http://localhost:5000/api/v1/shoppingcarts/get/wishlist_item_count/${userId}`)
+    .then(res => setCountNumWishlistItem(res.data))
+    .catch(err => console.log(err));
+  },[]);
 
   const logout = () => {
     if(token){
@@ -141,115 +148,41 @@ export default function MenuNavbar({ click }) {
           </div>
           <div className="col-lg-3 col-md-3">
             <div className="header__nav__option">
-              <Link to="#" className="search-switch">
-                <img src="img/icon/search.png" width="22" />
-              </Link>
+              <Link to="#" className="search-switch"> <img src="img/icon/search.png" width="22" /> </Link>
               
               {token ? 
                 <>
-                <Link to="#">
-                <img src="img/icon/heart.png" width="22" />
-              </Link>
-              <Link to="/cart" className="dropdown open">
-                <img src="img/icon/cart.png" className="dropdown-toggle" width="22" />{" "}
-                <span>{countNumCartItem ? countNumCartItem.countCartItem : "0"}</span>
-                {/* <div className="cart-dropdown">
-                  <div className="cart-list">
-                    <div className="product-widget">
-                      <div className="product-img">
-                        <img src="./img/shopping-cart/cart-1.jpg" />
-                      </div>
-                      <div className="product-body">
-                        <h3 className="product-name">
-                          <a href="#">product name goes here</a>
-                        </h3>
-                        <h4 className="product-price">1x $980.00</h4>
-                      </div>
-                      <button className="delete">
-                        <i className="fa fa-close" />
-                      </button>
-                    </div>
-                    <div className="product-widget">
-                      <div className="product-img">
-                        <img src="./img/shopping-cart/cart-2.jpg" />
-                      </div>
-                      <div className="product-body">
-                        <h3 className="product-name">
-                          <a href="#">product name goes here</a>
-                        </h3>
-                        <h4 className="product-price">1x $980.00</h4>
-                      </div>
-                      <button className="delete">
-                        <i className="fa fa-close" />
-                      </button>
-                    </div>
-                    <div className="product-widget">
-                      <div className="product-img">
-                        <img src="./img/shopping-cart/cart-3.jpg" />
-                      </div>
-                      <div className="product-body">
-                        <h3 className="product-name">
-                          <a href="#">product name goes here</a>
-                        </h3>
-                        <h4 className="product-price">1x $980.00</h4>
-                      </div>
-                      <button className="delete">
-                        <i className="fa fa-close" />
-                      </button>
-                    </div>
-                    <div className="product-widget">
-                      <div className="product-img">
-                        <img src="./img/shopping-cart/cart-4.jpg" />
-                      </div>
-                      <div className="product-body">
-                        <h3 className="product-name">
-                          <a href="#">product name goes here</a>
-                        </h3>
-                        <h4 className="product-price">1x $980.00</h4>
-                      </div>
-                      <button className="delete">
-                        <i className="fa fa-close" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="cart-summary">
-                    <small>3 Item(s) selected</small>
-                    <h5>SUBTOTAL: $2940.00</h5>
-                  </div>
-                  <div className="cart-btns">
-                    <Link to="/cart">
-                      View Cart <i className="far fa-eye ms-1" />
-                    </Link>
-                    <Link to="/checkout">
-                      Checkout <i className="fa fa-arrow-circle-right ms-1" />
-                    </Link>
-                  </div>
-                </div> */}
-              </Link>
-              <div className="price">$0.00</div>
+                  <Link to="/wishlist"> 
+                    <img src="img/icon/heart.png" width="22" /> 
+                    <span style={{marginLeft: "3px"}}>{countNumWishlistItem ? countNumWishlistItem.countWishlistItem : "0"}</span>
+                  </Link>
+                  <Link to="/cart" className="dropdown open">
+                    <img src="img/icon/cart.png"  width="22" />
+                    <span>{countNumCartItem ? countNumCartItem.countCartItem : "0"}</span>
+                  </Link>
                   <Link to="/" className="dropdown open">
-                  <img src={ user.user.image} style={{width: "30px", height: "30px"}} className="rounded-circle ms-2 border broder-5 border-danger"/>
-                    <div className="user-dropdown">
+                    <img src={ user.user.image} style={{width: "30px", height: "30px"}} className="rounded-circle  border broder-5 border-danger"/>
+                      <div className="user-dropdown">
                         <ul>
-                          <li><Link to="/">My Dashboard<i class="fas fa-home ms-2"></i></Link> </li>
+                          <li><Link to="/my-dashboard">My Dashboard<i class="fas fa-home ms-2"></i></Link> </li>
                           <li><Link onClick={() => {logout();}}>Logout<i class="fas fa-door-open ms-2"></i></Link> </li>
                         </ul>
                       </div>                    
-                    </Link>
-                  </>
-                  :
-                  <>
-                    <Link to="/" className="dropdown open">
-                    
-                      <i className="fas fa-user-circle ms-3 fs-5 my-auto text-dark"></i>
-                      <div className="user-dropdown">
-                        <ul>
-                          <li><Link to="/login" onClick={click}>Sign In<i class="fas fa-sign-in-alt ms-2"></i></Link> </li>
-                          <li><Link to="/sign-up">Sign Up <i class="fas fa-user-plus ms-2"></i></Link> </li>
-                        </ul>
-                      </div>
-                    </Link>
-                  </>
+                  </Link>
+                </>
+                :
+                <>
+                  <Link to="/" className="dropdown open">
+                  
+                    <i className="fas fa-user-circle ms-3 fs-5 my-auto text-dark"></i>
+                    <div className="user-dropdown">
+                      <ul>
+                        <li><Link to="/login" onClick={click}>Sign In<i class="fas fa-sign-in-alt ms-2"></i></Link> </li>
+                        <li><Link to="/sign-up">Sign Up <i class="fas fa-user-plus ms-2"></i></Link> </li>
+                      </ul>
+                    </div>
+                  </Link>
+                </>
              }
             </div>
           </div>
@@ -261,13 +194,4 @@ export default function MenuNavbar({ click }) {
     </nav>
   );
 }
-// function CustomeLink ({to, children, ...props}){
-//   const path = window.location.pathname
-//   return (
-//     <li className={path === to? "active" : ""}>
-//       <Link to={to} {...props}>
-//         {children}
-//       </Link>
-//     </li>
-//   )
-// }
+

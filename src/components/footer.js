@@ -39,8 +39,8 @@ export default function Footer(){
                             </div>
                             <h3 className="text-light fw-bold">{company.name}</h3>
                             <p>The customer is at the heart of our unique business model, which includes design.</p>
-                            <p><span><i class="fas fa-envelope me-2"></i></span> {company.email}</p>
-                            <p><span><i class="fas fa-phone-square-alt me-2"></i></span> {company.telephone}</p>
+                            <p><span><i class="fas fa-envelope me-2"></i></span> <a href="mailto:{company.email}" style={{textDecoration: "none", color: "#fff"}}>{company.email}</a></p>
+                            <p><span><i class="fas fa-phone-square-alt me-2"></i></span> <a href="tel:{company.telephone}" style={{textDecoration: "none", color: "#fff"}}>{company.telephone}</a></p>
                             <p><span><i class="far fa-map me-2"></i></span> {company.address}</p>
                         </div>
                     </div>

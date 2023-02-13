@@ -3,6 +3,7 @@ import { MDBBtn, MDBContainer, MDBCard, MDBCardBody, MDBCol, MDBRow, MDBInput, M
 import { Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import Alart from '../services/Alart';
+import "./styles/register.css";
 
 function App() {
   
@@ -35,7 +36,7 @@ function App() {
 
 
   return (
-    <MDBContainer fluid>
+    <MDBContainer fluid className='register-form'>
 
       <div className="p-5 bg-image" style={{backgroundImage: 'url(https://demos.creative-tim.com/soft-ui-dashboard/assets/img/curved-images/curved14.jpg)', height: '300px', backgroundPosition: 'top left ', backgroundSize: "cover"}}></div>
 

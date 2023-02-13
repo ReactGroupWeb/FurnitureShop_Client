@@ -22,7 +22,60 @@ export default function HotSaleProduct() {
     }, []);
 
 
-    let badge ="";
+    const [cart, setCart] = useState([]);
+  const [wishlist, setWishlist] = useState({});
+  const token = localStorage.getItem("token");
+  const user = token ? JSON.parse(token) : "";
+  const userId = user ? user.user.id : "";
+
+  console.log(userId);
+  
+  const handleAddToCart = async (productId, proQty) => {
+      try {
+
+          // get all the data of cart item by each user id
+          const response = await axios.get(`http://localhost:5000/api/v1/shoppingcarts/cart-item/${userId}`);
+          const items = response.data;
+
+          // check the exist cart item that is already exist
+          const existCartItem = items.find(item => item.product._id === productId);
+          if(existCartItem){
+              existCartItem.quantity += proQty;
+              await axios.put(`http://localhost:5000/api/v1/shoppingcarts/update-cart/${existCartItem._id}`, {
+                  quantity: existCartItem.quantity
+              });
+          }
+          else{
+              await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
+                  user: userId,
+                  product: productId,
+                  instance: 'cart',
+                  quantity: proQty
+              
+              });
+          }
+
+          setCart(response.data);
+          return response;
+      } catch (err) {
+          console.log(err)
+      }
+  }
+
+  const handleAddToWishlist = async (productId) => {
+      try {
+          const response = await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
+              user: userId,
+              product: productId,
+              instance: 'wishlist'
+          });
+
+          setWishlist({...wishlist, [productId]: response.data });
+          return response;
+      } catch (err) {
+          console.log(err)
+      }
+  }
 
     return (
 
@@ -97,8 +150,10 @@ export default function HotSaleProduct() {
                                     }
 
                                     <ul className="product__hover">
-                                        <li><a href="#"><img src="img/icon/heart.png" alt /></a></li>
-                                        <li><a href="#"><img src="img/icon/compare.png" alt /> <span>Compare</span></a>
+                                        <li>
+                                            <a href="#" onClick={() => handleAddToWishlist(hot_product.id)}>
+                                                {wishlist[hot_product.id] ? <img src="img/icon/red-heart.png" alt /> : <img src="img/icon/heart.png" alt />}
+                                            </a>
                                         </li>
                                         <li><Link to={`/shop/product_detail/${hot_product.id}`}><img src="img/icon/search.png" alt /></Link></li>
 
@@ -106,7 +161,7 @@ export default function HotSaleProduct() {
                                 </div>
                                 <div className="product__item__text">
                                     <h6>{hot_product.name}</h6>
-                                    <a href="#" className="add-cart">+ Add To Cart</a>
+                                    <a href="#" className="add-cart" onClick={() => handleAddToCart(hot_product.id, 1)}>+ Add To Cart</a>
                                     <div className="rating">
                                         <i className="fa fa-star-o" />
                                         <i className="fa fa-star-o" />

@@ -16,12 +16,20 @@ import Blog from "./screen/Blog";
 import ProductDetail from "./screen/ProductDetail";
 import ProductCategory from "./screen/ProductCategory";
 import Cart from "./screen/Cart";
+import Wishlist from "./screen/Wishlist";
 import Checkout from "./screen/Checkout";
 import BlogDetail from "./screen/BlogDetail";
 // import Breadcrumbs from './components/Breadcrumbs';z
 import Login from "./screen/Login";
 import SignUp from "./screen/SignUp";
 import ProtectedRoute from "./components/ProtectedRoute";
+
+
+import { MyDashboard } from "./screen/MyDashboard";
+
+// page 404 not found
+import Page404 from "./screen/page404";
+
 
 export default function App() {
   return (
@@ -33,19 +41,22 @@ export default function App() {
       {/* <Breadcrumbs/> */}  
       
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/aboutus" element={<AboutUs />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/shop" element={<Shop />} />
-        <Route path="/blog" element={<Blog />} />
-        <Route path="/shop/product_detail/:id" element={<ProductDetail />} />
-        <Route path="/shop/product_category/:id" element={<ProductCategory/>} />
-        <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
-        <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-        <Route path="/BlogDetail" element={<BlogDetail />} />
-        <Route path="/login" element={<Login/>}></Route>
-      <Route path="/sign-up" element={<SignUp/>}></Route>
-    </Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/aboutus" element={<AboutUs />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/shop/product_detail/:id" element={<ProductDetail />} />
+          <Route path="/shop/product_category/:id" element={<ProductCategory/>} />
+          <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+          <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+          <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+          <Route path="/BlogDetail" element={<BlogDetail />} />
+          <Route path="/login" element={<Login/>}></Route>
+          <Route path="/sign-up" element={<SignUp/>}></Route>
+          <Route path="/my-dashboard" element={<ProtectedRoute><MyDashboard/></ProtectedRoute>}></Route>
+          <Route path="*" element={<Page404/>} />
+      </Routes>
       
       <Footer />
     </Router>
