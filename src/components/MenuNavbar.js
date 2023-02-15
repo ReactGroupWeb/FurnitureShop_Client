@@ -153,6 +153,7 @@ export default function MenuNavbar({ click }) {
                     <div className="user-dropdown">
                       <ul>
                         <li><Link to="/my-dashboard">My Dashboard<i class="fas fa-home ms-2"></i></Link> </li>
+                        <li><Link to="/my-account">My Account<i class="fas fa-crown ms-2"></i></Link> </li>
                         <li><Link onClick={() => { logout(); }}>Logout<i class="fas fa-door-open ms-2"></i></Link> </li>
                       </ul>
                     </div>

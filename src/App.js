@@ -27,6 +27,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 import MyDashboard from "./screen/MyDashboard";
 import OrderDetail from "./screen/OrderDetail";
+import MyAccount from "./screen/MyAccount";
 
 // page 404 not found
 import Page404 from "./screen/page404";
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="/sign-up" element={<SignUp/>}></Route>
           <Route path="/my-dashboard" element={<ProtectedRoute><MyDashboard/></ProtectedRoute>}></Route>
           <Route path="/order-detail/:id" element={<ProtectedRoute><OrderDetail/></ProtectedRoute>}></Route>
+          <Route path="/my-account" element={<ProtectedRoute><MyAccount/></ProtectedRoute>}></Route>
           <Route path="*" element={<Page404/>} />
       </Routes>
       

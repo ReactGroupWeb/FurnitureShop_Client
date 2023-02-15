@@ -69,6 +69,29 @@
     font-weight: 600;
     border-top: 1px solid #eee;
 }
-.status-success{
-    padding: 0px 10px 5px 10px;
+.status-success, .status-delivering{
+    padding: 3px 15px 5px 15px;
+    font-weight: 600;
+}
+.order__title {
+    color: #111111;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-bottom: 0px solid #d7d7d7 !important;
+    padding-bottom: 0px !important;
+    margin-bottom: 30px;
+}
+.order_title{
+    color: #111111;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-bottom: 0px solid #d7d7d7 !important;
+    padding-bottom: 0px !important;
+    margin-bottom: 0px !important;
+}
+.checkout__total__all {
+    border-top: 1px solid #d7d7d7;
+    border-bottom: 0px solid #d7d7d7 !important;
+    padding: 15px 0;
+    margin-bottom: 26px;
 }

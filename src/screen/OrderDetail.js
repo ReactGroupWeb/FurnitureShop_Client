@@ -1,11 +1,20 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, {useState, useEffect} from "react";
+import { Link, useParams } from "react-router-dom";
 import Card from "react-bootstrap/Card";
+import axios from "axios";
+import "./styles/my-dashboard.css";
 
 export default function OrderDetail() {
-    const style={
-        borderBottom: 'none !important'
-      }
+  const [orders , setOrders] = useState([]);
+  const params = useParams();
+  const orderId = params.id;
+  const i = 0;
+  useEffect(() => {
+    axios.get(`http://localhost:5000/api/v1/orders/${orderId}`)
+    .then(res => setOrders(res.data))
+    .catch(err => console.log(err));
+  }, []);
+
   return (
     <div>
       {/* Breadcrumb */}
@@ -28,111 +37,30 @@ export default function OrderDetail() {
       {/* Breadcrumb */}
 
       <section className="shop spad">
+
         {/* start shop page */}
         <div className="container">
           <div className="row">
-            <div className="col-lg-3 col-md-6 col-sm-6">
-              <Card style={{ border: "none" }}>
-                <Card.Img
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnIa4R9Niz9G6xK76UgHM-R4t-C1PwwZSxYw&usqp=CAU"
-                  style={{
-                    height: "260px",
-                    objectFit: "cover",
-                    maxHeight: "260px",
-                  }}
-                />
-                <Card.Body className="text-start px-0 py-4">
-                  <Card.Title
-                    as="h6"
-                    style={{ color: "#111111 !important", fontWeight: "600" }}
-                  >
-                    Piqué Biker Jacket
-                  </Card.Title>
-                  <Card.Title as="h5" className="fw-bold">
-                    Price: $67.24
-                  </Card.Title>
-                  <Card.Text>Amount: 5</Card.Text>
-                </Card.Body>
-              </Card>
-            </div>
+          {
+              orders && orders.orderItems && orders.orderItems.map((item) => (
 
-            <div className="col-lg-3 col-md-6 col-sm-6">
-              <Card style={{ border: "none" }}>
-                <Card.Img
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS62QsigD9JXBUvf6SEVR91hvJkMYmh5WBUBA&usqp=CAU"
-                  style={{
-                    height: "260px",
-                    objectFit: "cover",
-                    maxHeight: "260px",
-                  }}
-                />
-                <Card.Body className="text-start px-0 py-4">
-                  <Card.Title
-                    as="h6"
-                    style={{ color: "#111111 !important", fontWeight: "600" }}
-                  >
-                    Piqué Biker Jacket
-                  </Card.Title>
-                  <Card.Title as="h5" className="fw-bold">
-                    Price: $67.24
-                  </Card.Title>
-                  <Card.Text>Amount: 5</Card.Text>
-                </Card.Body>
-              </Card>
-            </div>
+                <div className="col-lg-3 col-md-6 col-sm-6" key={item.id}>
+                  <Card style={{ border: "none" }}>
+                    <Card.Img src={item.product.image} style={{ height: "260px", objectFit: "cover", maxHeight: "260px" }} />
+                    <Card.Body className="text-start px-0 py-4">
+                      <Card.Title as="h6" style={{ color: "#111111 !important", fontWeight: "600" }} > {item.product.name} </Card.Title>
+                      <Card.Title as="h5" className="fw-bold">Price: ${item.product.salePrice ? item.product.salePrice.toFixed(2) : item.product.regularPrice.toFixed(2)}</Card.Title>
+                      <Card.Text>Amount: {item.quantity}</Card.Text>
+                    </Card.Body>
+                  </Card>
+                </div>
 
-            <div className="col-lg-3 col-md-6 col-sm-6">
-              <Card style={{ border: "none" }}>
-                <Card.Img
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeyzqg_rg84JooPLuTuqVWzyhaC-6LGE9-VA&usqp=CAU"
-                  style={{
-                    height: "260px",
-                    objectFit: "cover",
-                    maxHeight: "260px",
-                  }}
-                />
-                <Card.Body className="text-start px-0 py-4">
-                  <Card.Title
-                    as="h6"
-                    style={{ color: "#111111 !important", fontWeight: "600" }}
-                  >
-                    Piqué Biker Jacket
-                  </Card.Title>
-                  <Card.Title as="h5" className="fw-bold">
-                    Price: $67.24
-                  </Card.Title>
-                  <Card.Text>Amount: 5</Card.Text>
-                </Card.Body>
-              </Card>
-            </div>
+            ))}
 
-            <div className="col-lg-3 col-md-6 col-sm-6">
-              <Card style={{ border: "none" }}>
-                <Card.Img
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxNCw6XgntJuYz4vbDRODMZ1yyUM-H_wu3Ow&usqp=CAU"
-                  style={{
-                    height: "260px",
-                    objectFit: "cover",
-                    maxHeight: "260px",
-                  }}
-                />
-                <Card.Body className="text-start px-0 py-4">
-                  <Card.Title
-                    as="h6"
-                    style={{ color: "#111111 !important", fontWeight: "600" }}
-                  >
-                    Piqué Biker Jacket
-                  </Card.Title>
-                  <Card.Title as="h5" className="fw-bold">
-                    Price: $67.24
-                  </Card.Title>
-                  <Card.Text>Amount: 5</Card.Text>
-                </Card.Body>
-              </Card>
-            </div>
           </div>
         </div>
         {/* end shop page */}
+        
       </section>
 
       {/* <section className="checkout spad"> */}
@@ -142,74 +70,86 @@ export default function OrderDetail() {
               <div className="row">
                 <div className="col-lg-12 col-md-6">
                   <div className="checkout__order">
-                    <h4 className="order__title">My order</h4>
-                    {/* <div className="checkout__order__products">
-                      Product <span>Total</span>
-                    </div>
-                    <ul className="checkout__total__products">
-                      <li>
-                        01. Vanilla salted caramel <span>$ 300.0</span>
-                      </li>
-                      <li>
-                        02. German chocolate <span>$ 170.0</span>
-                      </li>
-                      <li>
-                        03. Sweet autumn <span>$ 170.0</span>
-                      </li>
-                      <li>
-                        04. Cluten free mini dozen <span>$ 110.0</span>
-                      </li>
-                    </ul> */}
+                    <h4 className="order_title text-center">My order</h4>
+                  </div>
+                </div>
+
+
+                {/* Shipping Address */}
+                <div className="col-lg-12 col-md-6">
+                  <div className="checkout__order">
+                    <h4 className="order__title">Shipping Address</h4>
+                    <table className="table table-striped">
+                      <tbody>
+                        <tr>
+                          <th>Name</th>
+                          <td>{orders.user ? orders.user.name : ""}</td>
+                        </tr>
+                        <tr>
+                          <th>Email</th>
+                          <td>{orders.user ? orders.user.email : ""}</td>
+                        </tr>
+                        <tr>
+                          <th>Phone</th>
+                          <td>{orders.user ? orders.user.phone : ""}</td>
+                        </tr>
+                        <tr>
+                          <th>Shipping Address</th>
+                          <td>{orders.shippingAddress}</td>
+                        </tr>
+                        <tr>
+                          <th>{"City/Province"}</th>
+                          <td>{orders.city}</td>
+                        </tr>
+                        <tr>
+                          <th>Country</th>
+                          <td>{orders.country}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                {/* Shipping Address */}
+
+
+                {/* Payment */}
+                <div className="col-lg-12 col-md-6">
+                  <div className="checkout__order">
+                  <h4 className="order__title">Product Ordered</h4>
                     <table className='table checkout__order__products table-striped'>
                         <thead >
                             <tr>
                                 <th colSpan={2}>Product</th>
                                 <th className='text-center'>Price</th>
-                                <th className='text-center'>Qty</th>
+                                <th className='text-center'>Quantity</th>
                                 <th className='text-center'>Total</th>
                             </tr>
                         </thead>
                         <tbody>
-                            
-                            
-                                <tr className="checkout__total__products">
-                                    <td style={{width: "10px"}}>01.</td>
-                                    <td>Piqué Biker Jacket</td>
-                                    <td className='text-center'>$50.00</td>
-                                    <td className='text-center'>5</td>
-                                    <td className='text-center'>$250.00</td>
+                           
+                            {
+                              orders && orders.orderItems && orders.orderItems.map((item, i=1) => (
+                                <tr className="checkout__total__products" key={item.id}>
+                                    <td style={{width: "10px"}}>0{i+1}.</td>
+                                    <td>{item.product.name}</td>
+                                    <td className='text-center'>${item.product.salePrice ? item.product.salePrice.toFixed(2) : item.product.regularPrice.toFixed(2)}</td>
+                                    <td className='text-center'> {item.quantity}</td>
+                                    <td className='text-center'>${((item.product.salePrice ? item.product.salePrice.toFixed(2) : item.product.regularPrice.toFixed(2)) * item.quantity).toFixed(2)}</td>
                                 </tr>
-                                <tr className="checkout__total__products">
-                                    <td style={{width: "10px"}}>02.</td>
-                                    <td>Piqué Biker Jacket</td>
-                                    <td className='text-center'>$50.00</td>
-                                    <td className='text-center'>5</td>
-                                    <td className='text-center'>$250.00</td>
-                                </tr>
-                                <tr className="checkout__total__products">
-                                    <td style={{width: "10px"}}>03.</td>
-                                    <td>Piqué Biker Jacket</td>
-                                    <td className='text-center'>$50.00</td>
-                                    <td className='text-center'>5</td>
-                                    <td className='text-center'>$250.00</td>
-                                </tr>
-                    
-                            
+                            ))}
+
                         </tbody>
                     </table>
-                    <ul className="checkout__total__all" style={style}>
-                      <li>
-                        Subtotal <span>$750.00</span>
-                      </li>
-                      <li>
-                        Tax <span>$75.00</span>
-                      </li>
-                      <li>
-                        Total <span>$825.00</span>
-                      </li>
+                    
+                    <ul className="checkout__total__all">
+                    <h4 className="order_title py-4">Total Paid</h4>
+                      <li>Subtotal <span>${orders.subTotal ? orders.subTotal.toFixed(2) : ""}</span></li>
+                      <li>Tax <span>${orders.tax ? orders.tax.toFixed(2) : ""}</span></li>
+                      <li>Total <span>${orders.totalPrice ? orders.totalPrice.toFixed(2) : ""}</span></li>
                     </ul>
                   </div>
                 </div>
+                 {/* Payment */}
               </div>
             </form>
           </div>

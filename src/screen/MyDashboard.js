@@ -11,12 +11,10 @@ export default function MyDashboard(){
   const user = token ? JSON.parse(token) : "";
   const userId = user ? user.user.id : "";
   const i = 0;
+  const [total_purchase, setTotal_purchase] = useState([]);
+  const [total_delivery, setTotal_delivery] = useState([]);
 
-  // useEffect(() => {
-  //     axios.get(`http://localhost:5000/api/v1/orders/item-order/${userId}`)
-  //     .then(res => setOrders(res.data))
-  //     .catch(err => console.log(err));
-  // },[]);
+  
 
   useEffect(() => {
     setTimeout(() => {
@@ -24,14 +22,38 @@ export default function MyDashboard(){
       .then(res => setOrders(res.data))
       .catch(err => console.log(err));
     }, 1000)
+  });
+
+  // update the order status to success
+  const updateStatusSuccess = async (orderId) => {
+    try {
+      const orderResponse = orders.find(item => item.id === orderId);
+      axios.put(`http://localhost:5000/api/v1/orders/success/${orderId}`, orderResponse);
+
+      return orderResponse;
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  const totalCost = orders.reduce((total, item) => total + (item.status === "Success" && item.totalPrice ? item.totalPrice : 0), 0);
+  useEffect(() => {
+
+      axios.get(`http://localhost:5000/api/v1/orders/total-purchased/${userId}`)
+      .then(res => setTotal_purchase(res.data))
+      .catch(err => console.log(err));
+ 
   },[]);
 
-  const formatDate = (date) => {
-    if (date instanceof Date) {
-      return date.toLocaleDateString();
-    }
-    return date;
-  }
+  useEffect(() => {
+
+      axios.get(`http://localhost:5000/api/v1/orders/total-delivery/${userId}`)
+      .then(res => setTotal_delivery(res.data))
+      .catch(err => console.log(err));
+  
+  },[]);
+
+
   return (
     <div>
       {/* Breadcrum */}
@@ -63,7 +85,7 @@ export default function MyDashboard(){
                   <div className="row">
                     <div className="col-xs-8 text-left">
                       <span className="icon-stat-label">Total Cost</span>
-                      <span className="icon-stat-value">$ 0</span>
+                      <span className="icon-stat-value">${totalCost.toFixed(2)}</span>
                     </div>
                     <div className="col-xs-4 text-center">
                       <i className="fa-solid fa-sack-dollar icon-stat-visual bg-warning" />
@@ -79,7 +101,7 @@ export default function MyDashboard(){
                   <div className="row">
                     <div className="col-xs-8 text-left">
                       <span className="icon-stat-label">Total Purchase</span>
-                      <span className="icon-stat-value">0</span>
+                      <span className="icon-stat-value">{total_purchase.totalPurchased}</span>
                     </div>
                     <div className="col-xs-4 text-center">
                       <i className="fa-solid fa-cash-register icon-stat-visual bg-danger" />
@@ -95,7 +117,7 @@ export default function MyDashboard(){
                   <div className="row">
                     <div className="col-xs-8 text-left">
                       <span className="icon-stat-label">Total Delivered</span>
-                      <span className="icon-stat-value">0</span>
+                      <span className="icon-stat-value">{total_delivery.totalDelivery ? total_delivery.totalDelivery : 0}</span>
                     </div>
                     <div className="col-xs-4 text-center">
                       <i className="fa-solid fa-truck icon-stat-visual bg-dark" />
@@ -158,20 +180,27 @@ export default function MyDashboard(){
                       <tbody>
 
                         {orders.map((item, i=1) => (
-                          <tr key={item._id}>
+                          <tr key={item.id}>
                             <td>{i+1}</td>
                             <td>${item.subTotal.toFixed(2)}</td>
                             <td>${item.tax.toFixed(2)}</td>
                             <td>${item.totalPrice.toFixed(2)}</td>
                             <td>{item.lastname} {item.firstname}</td>
-                            <td>{item.phone}</td>
+                            <td>+ 855 {item.phone}</td>
                             <td>{item.email}</td>
-                            <td><span className="bg-success text-light status-success">success</span> </td>
+                            <td>
+                              {
+                                item.status === "Delivering" ? 
+                                <> <span className="bg-warning text-dark status-delivering">Delivering</span> </>
+                                :
+                                <> <span className="bg-success text-light status-success">Success</span> </>
+                              }
+                            </td>
                             {/* <td>{formatDate(item.dateOrdered)}</td> */}
                             <td>{(new Date(item.dateOrdered)).toLocaleDateString()} | {(new Date(item.dateOrdered)).toLocaleTimeString()} </td>
                             <td>
-                              <Link to="/order-detail/:id" className="btn btn-info btn-sm"> <i className="fa-solid fa-eye" /></Link>
-                              <a href="#" className="btn btn-sm btn-success ms-2"><i className="fas fa-check"></i></a>
+                              <Link to={`/order-detail/${item.id}`} className="btn btn-info btn-sm"> <i className="fa-solid fa-eye" /></Link>
+                              <a href="#" className={item.status === "Success" ? "d-none" : "btn btn-sm btn-success ms-2"} onClick={() => updateStatusSuccess (item.id)}><i className="fas fa-check"></i></a>
                             </td>
                           </tr>
                         ))}
