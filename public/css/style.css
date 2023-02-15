@@ -29,6 +29,18 @@
 /*----------------------------------------*/
 /* Template default CSS
 /*----------------------------------------*/
+.disabled {
+	pointer-events: none;
+	cursor: not-allowed;
+}
+.remaining{
+	margin-top: 20px;
+	font-size: 11px;
+	letter-spacing: 2px;
+	text-transform: uppercase;
+	padding: 4px 15px 2px;
+}
+  
 
  /************************************************
         Back To Top Button

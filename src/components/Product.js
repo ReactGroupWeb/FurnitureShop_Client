@@ -24,30 +24,35 @@ export default function Product() {
   const handleAddToCart = async (productId, proQty) => {
       try {
 
-          // get all the data of cart item by each user id
-          const response = await axios.get(`http://localhost:5000/api/v1/shoppingcarts/cart-item/${userId}`);
-          const items = response.data;
+        const productResponse = await axios.get(`http://localhost:5000/api/v1/products/${productId}`);
+        const subStractCountInStock = productResponse.data;
+        subStractCountInStock.countInStock -= proQty;
 
-          // check the exist cart item that is already exist
-          const existCartItem = items.find(item => item.product._id === productId);
-          if(existCartItem){
-              existCartItem.quantity += proQty;
-              await axios.put(`http://localhost:5000/api/v1/shoppingcarts/update-cart/${existCartItem._id}`, {
-                  quantity: existCartItem.quantity
-              });
-          }
-          else{
-              await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
-                  user: userId,
-                  product: productId,
-                  instance: 'cart',
-                  quantity: proQty
-              
-              });
-          }
+        // get all the data of cart item by each user id
+        const response = await axios.get(`http://localhost:5000/api/v1/shoppingcarts/cart-item/${userId}`);
+        const items = response.data;
 
-          setCart(response.data);
-          return response;
+        // check the exist cart item that is already exist
+        const existCartItem = items.find(item => item.product._id === productId);
+        if(existCartItem){
+            existCartItem.quantity += proQty;
+            await axios.put(`http://localhost:5000/api/v1/shoppingcarts/update-cart/${existCartItem._id}`, { quantity: existCartItem.quantity });
+
+            await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
+        }
+        else{
+            await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
+                user: userId,
+                product: productId,
+                instance: 'cart',
+                quantity: proQty
+            });
+
+            await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
+        }
+
+        setCart(response.data);
+        return response;
       } catch (err) {
           console.log(err)
       }
@@ -134,12 +139,9 @@ export default function Product() {
                   <div className="product__item__pic set-bg" style={{ backgroundImage: `url(${product.image})` }}>
                     
                     {/* Display the sale badage if it the salePrice is greater than zero */}
-                    {product.salePrice ?
-                      <>
-                        <span className="label text-light bg-dark">sales</span>
-                      </>
-                      : " "
-                    }
+                    {product.salePrice ? <p className="label text-light bg-dark float-start">sales</p> : " " }
+                    {product.countInStock >= 0 && product.countInStock <= 20 ?  <p className="float-end text-light bg-danger fw-bold remaining">Remaining: {product.countInStock}</p> : " " }
+                    
                     <ul className="product__hover">
                       <li><a href="#" onClick={() => handleAddToWishlist(product.id)}>
                             {wishlist[product.id] ? <img src="img/icon/red-heart.png" alt /> : <img src="img/icon/heart.png" alt />}
@@ -151,7 +153,9 @@ export default function Product() {
                   </div>
                   <div className="product__item__text">
                     <h6>{product.name}</h6>
-                    <a href="#" className="add-cart" onClick={() => handleAddToCart(product.id, 1)}>+ Add To Cart</a>
+                    <a href="#" className={ product.countInStock === 0 ? 'disabled': 'add-cart'} onClick={() => handleAddToCart(product.id, 1)}>
+                        { product.countInStock === 0 ? 'Add To Cart is not available': '+ Add To Cart'}
+                    </a>
                     <div className="rating">
                       <i className="fa fa-star-o" />
                       <i className="fa fa-star-o" />
@@ -162,24 +166,12 @@ export default function Product() {
                     <h5>
                       {product.salePrice ?
                         <>
-                          {product.salePrice && typeof product.salePrice === 'number'
-                            ? product.salePrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
-                            : 'N/A'
-                          }
-
-                          <span>
-                            {product.regularPrice && typeof product.regularPrice === 'number'
-                              ? product.regularPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
-                              : 'N/A'
-                            }
-                          </span>
+                          ${product.salePrice ? product.salePrice.toFixed(2) : 'N/A' }
+                          <span> ${product.regularPrice ? product.regularPrice.toFixed(2) : 'N/A' } </span>
                         </>
                         :
                         <>
-                          {product.regularPrice && typeof product.regularPrice === 'number'
-                            ? product.regularPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
-                            : 'N/A'
-                          }
+                          ${product.regularPrice ? product.regularPrice.toFixed(2) : 'N/A' }
                         </>
 
                       }

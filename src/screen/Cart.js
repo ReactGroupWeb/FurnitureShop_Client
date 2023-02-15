@@ -71,7 +71,7 @@ export default function Cart() {
 
                                 <div className="col-lg-12 text-center">
                                     <h1>Cart is empty...</h1>
-                                    <p>Please go to shop and add product</p>
+                                    <p>Please go to shop and Add product</p>
                                     <Link to="/shop" className="btn btn-success btn-sm px-4 py-2 fw-bold text-center">Shop Now <i class="fas fa-shopping-cart ms-1"></i></Link>
                                 </div>
 

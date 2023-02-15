@@ -33,30 +33,35 @@ export default function HotSaleProduct() {
   const handleAddToCart = async (productId, proQty) => {
       try {
 
-          // get all the data of cart item by each user id
-          const response = await axios.get(`http://localhost:5000/api/v1/shoppingcarts/cart-item/${userId}`);
-          const items = response.data;
+        const productResponse = await axios.get(`http://localhost:5000/api/v1/products/${productId}`);
+        const subStractCountInStock = productResponse.data;
+        subStractCountInStock.countInStock -= proQty;
 
-          // check the exist cart item that is already exist
-          const existCartItem = items.find(item => item.product._id === productId);
-          if(existCartItem){
-              existCartItem.quantity += proQty;
-              await axios.put(`http://localhost:5000/api/v1/shoppingcarts/update-cart/${existCartItem._id}`, {
-                  quantity: existCartItem.quantity
-              });
-          }
-          else{
-              await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
-                  user: userId,
-                  product: productId,
-                  instance: 'cart',
-                  quantity: proQty
-              
-              });
-          }
+        // get all the data of cart item by each user id
+        const response = await axios.get(`http://localhost:5000/api/v1/shoppingcarts/cart-item/${userId}`);
+        const items = response.data;
 
-          setCart(response.data);
-          return response;
+        // check the exist cart item that is already exist
+        const existCartItem = items.find(item => item.product._id === productId);
+        if(existCartItem){
+            existCartItem.quantity += proQty;
+            await axios.put(`http://localhost:5000/api/v1/shoppingcarts/update-cart/${existCartItem._id}`, { quantity: existCartItem.quantity });
+
+            await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
+        }
+        else{
+            await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
+                user: userId,
+                product: productId,
+                instance: 'cart',
+                quantity: proQty
+            });
+
+            await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
+        }
+
+        setCart(response.data);
+        return response;
       } catch (err) {
           console.log(err)
       }
@@ -142,12 +147,8 @@ export default function HotSaleProduct() {
                             <div className="product__item">
                                 <div className="product__item__pic set-bg" style={{ backgroundImage: `url(${hot_product.image})` }}>
 
-                                    {hot_product.salePrice?
-                                        <>
-                                            <span className="label text-light bg-dark">sales</span>
-                                        </>
-                                        :""
-                                    }
+                                    {hot_product.salePrice ? <p className="label text-light bg-dark float-start">sales</p> : " " }
+                                    {hot_product.countInStock >= 0 && hot_product.countInStock <= 20 ?  <p className="float-end text-light bg-danger fw-bold remaining">Remaining: {hot_product.countInStock}</p> : " " }
 
                                     <ul className="product__hover">
                                         <li>
@@ -161,7 +162,9 @@ export default function HotSaleProduct() {
                                 </div>
                                 <div className="product__item__text">
                                     <h6>{hot_product.name}</h6>
-                                    <a href="#" className="add-cart" onClick={() => handleAddToCart(hot_product.id, 1)}>+ Add To Cart</a>
+                                    <a href="#" className={ hot_product.countInStock === 0 ? 'disabled': 'add-cart'} onClick={() => handleAddToCart(hot_product.id, 1)}>
+                                        { hot_product.countInStock === 0 ? 'Add To Cart is not available': '+ Add To Cart'}
+                                    </a>
                                     <div className="rating">
                                         <i className="fa fa-star-o" />
                                         <i className="fa fa-star-o" />
@@ -172,23 +175,12 @@ export default function HotSaleProduct() {
                                     <h5>
                                         {hot_product.salePrice ?
                                             <>
-                                                {hot_product.salePrice && typeof hot_product.salePrice === 'number'
-                                                    ? hot_product.salePrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
-                                                    : 'N/A'
-                                                }
-
-                                                <span>{hot_product.regularPrice && typeof hot_product.regularPrice === 'number'
-                                                    ? hot_product.regularPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
-                                                    : 'N/A'
-                                                }
-                                                </span>
+                                                ${hot_product.salePrice ? hot_product.salePrice.toFixed(2) : 'N/A' }
+                                                <span>${hot_product.regularPrice ? hot_product.regularPrice.toFixed(2) : 'N/A'}</span>
                                             </>
                                             :
                                             <>
-                                                {hot_product.regularPrice && typeof hot_product.regularPrice === 'number'
-                                                    ? hot_product.regularPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
-                                                    : 'N/A'
-                                                }
+                                                ${hot_product.regularPrice ? hot_product.regularPrice.toFixed(2) : 'N/A'}
                                             </>
                                         }
                                     </h5>

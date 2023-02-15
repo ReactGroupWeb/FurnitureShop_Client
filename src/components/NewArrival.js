@@ -27,30 +27,35 @@ export default function NewArrival () {
   const handleAddToCart = async (productId, proQty) => {
       try {
 
-          // get all the data of cart item by each user id
-          const response = await axios.get(`http://localhost:5000/api/v1/shoppingcarts/cart-item/${userId}`);
-          const items = response.data;
+        const productResponse = await axios.get(`http://localhost:5000/api/product/${productId}`);
+        const subStractCountInStock = productResponse.data;
+        subStractCountInStock.countInStock -= proQty;
 
-          // check the exist cart item that is already exist
-          const existCartItem = items.find(item => item.product._id === productId);
-          if(existCartItem){
-              existCartItem.quantity += proQty;
-              await axios.put(`http://localhost:5000/api/v1/shoppingcarts/update-cart/${existCartItem._id}`, {
-                  quantity: existCartItem.quantity
-              });
-          }
-          else{
-              await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
-                  user: userId,
-                  product: productId,
-                  instance: 'cart',
-                  quantity: proQty
-              
-              });
-          }
+        // get all the data of cart item by each user id
+        const response = await axios.get(`http://localhost:5000/api/v1/shoppingcarts/cart-item/${userId}`);
+        const items = response.data;
 
-          setCart(response.data);
-          return response;
+        // check the exist cart item that is already exist
+        const existCartItem = items.find(item => item.product._id === productId);
+        if(existCartItem){
+            existCartItem.quantity += proQty;
+            await axios.put(`http://localhost:5000/api/v1/shoppingcarts/update-cart/${existCartItem._id}`, { quantity: existCartItem.quantity });
+
+            await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
+        }
+        else{
+            await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
+                user: userId,
+                product: productId,
+                instance: 'cart',
+                quantity: proQty
+            });
+
+            await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
+        }
+
+        setCart(response.data);
+        return response;
       } catch (err) {
           console.log(err)
       }
@@ -107,7 +112,7 @@ export default function NewArrival () {
                         <i className="fa fa-star-o" />
                         <i className="fa fa-star-o" />
                     </div>
-                    <h5>{product.regularPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</h5>
+                    <h5>${product.regularPrice.toFixed(2)}</h5>
                     <div className="product__color__select">
                         <label htmlFor="pc-4">
                         <input type="radio" id="pc-4" />
