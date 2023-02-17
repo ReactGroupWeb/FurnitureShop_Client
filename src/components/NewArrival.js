@@ -95,10 +95,10 @@ export default function NewArrival () {
                         <ul className="product__hover">
                             <li>
                                 <a href="#" onClick={() => handleAddToWishlist(product.id)}>
-                                    {wishlist[product.id] ? <img src="img/icon/red-heart.png" alt /> : <img src="img/icon/heart.png" alt />}
+                                    {wishlist[product.id] ? <img src="img/icon/red-heart.png"   /> : <img src="img/icon/heart.png"   />}
                                 </a>
                             </li>
-                            <li><Link to={`/shop/product_detail/${product.id}`}><img src="img/icon/search.png" alt /></Link></li>
+                            <li><Link to={`/shop/product_detail/${product.id}`}><img src="img/icon/search.png"   /></Link></li>
                             
                         </ul>
                     </div>

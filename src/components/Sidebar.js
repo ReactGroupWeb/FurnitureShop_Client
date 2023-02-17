@@ -7,19 +7,15 @@ export default function Sidebar() {
 
     const [categories, setCategories] = useState({});
 
-
     useEffect(() => {
         axios.get('http://localhost:5000/api/v1/products/get/product_category')
-        .then(res => {
-            setCategories(res.data);
-        })
-        .catch(err => {
-            console.log(err);
-        });
+        .then(res => setCategories(res.data))
+        .catch(err => console.log(err));
     }, []);
 
-
-    
+    const scrollToTop = () => {
+        window.scrollTo(0, 0);
+      }
   return (
     <div className="col-lg-3">
         <div className="shop__sidebar">
@@ -45,18 +41,12 @@ export default function Sidebar() {
                                     
                                 {Object.keys(categories).map((key => 
                                     <li key={key}>
-                                        <NavLink to={`/shop/product_category/${categories[key]._id.toString()}`}>
+                                        <NavLink to={`/shop/product_category/${categories[key]._id}`} onClick={scrollToTop}>
                                             {categories[key].name} ({categories[key].count})
                                         </NavLink>
-                                        {/* <a href={`/shop/product_category/${JSON.stringify(categories[key]._id)}`}>{categories[key].name} ({categories[key].count})</a> */}
                                     </li>
                                 ))}
                               
-                                {/* {categories.map(category => (
-                                    <li key={category._id._id}>
-                                        <a href="#">{category.name} ({category.count})</a>
-                                    </li>
-                                ))} */}
                                 </ul>
                             </div>
                             </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Sidebar from '../components/Sidebar';
@@ -8,16 +8,46 @@ import Pagination from '../components/Pagination';
 export default function Shop(){
     const [products, setProducts]= useState([]);
 
-    // sort product price properties
-    // const [filterProducts , setFilterProducts] = useState([]);
-    // const [priceFilters, setPriceFilters] = useState(""); // only value is available
+    // sort product filter
+    const [filter, setFilter] = useState("");
+
+     
+    // set filter by price status
+    const filterByPriceStatus = (e) => {
+        setFilter(e.target.value);
+    }
+
+    // set filter by price value
+    const filterProductByPrice = useMemo(() => { // useMemo is used to filtered products whenever the filter or products state change by clicked
+
+        // if the product is not yet filter by clicked, it shows all the product items
+        if(!filter){
+            return products;
+        }
+
+        return products.filter((product) => {
+            if(filter === "minSalePrice"){
+                return product.salePrice >= 0 && product.salePrice <= 150;
+            }
+            else if(filter === "maxSalePrice"){
+                return product.salePrice > 150 && product.salePrice <= 2000;   
+            }
+            else if(filter === "minRegularPrice"){
+                return product.regularPrice >= 0 && product.regularPrice <= 2000;   
+            }
+            else if(filter === "maxRegularPrice"){
+                return product.regularPrice > 150 && product.regularPrice <= 2000;   
+            }
+        });
+    }, [filter, products]);
+    
 
     // pagination properties
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemPerPage, setItemPerPage] = useState(6);
+    const [itemPerPage] = useState(6);
     const indexOfLastItem = currentPage * itemPerPage;
     const indexOfFirstItem = indexOfLastItem - itemPerPage;
-    const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems = filterProductByPrice.slice(indexOfFirstItem, indexOfLastItem);
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     const prev = () => { setCurrentPage (currentPage - 1)};
     const next = () => { setCurrentPage (currentPage + 1)};
@@ -25,15 +55,10 @@ export default function Shop(){
     useEffect(() => {
         setTimeout(() => {
             axios.get("http://localhost:5000/api/v1/products")
-            .then(res=>{
-                setProducts(res.data);
-            })
-            .catch(err =>{
-                console.log(err);
-            })
+            .then(res=> setProducts(res.data))
+            .catch(err => console.log(err))
         }, 1000) 
-        
-    });
+    },[filter, currentPage]);
 
     const [cart, setCart] = useState([]);
     const [wishlist, setWishlist] = useState({});
@@ -77,11 +102,10 @@ export default function Shop(){
 
                 // implement the update of substract count_in_stock
                 await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
-               
             }
 
             setCart(response.data);
-            return response;
+            return cart;
         } catch (err) {
             console.log(err)
         }
@@ -101,11 +125,11 @@ export default function Shop(){
             console.log(err)
         }
     }
-    
    
 
     return(
         <div>
+            {/* Breadcrumb */}
             <section className="breadcrumb-option">
                 <div className="container">
                 <div className="row">
@@ -121,6 +145,7 @@ export default function Shop(){
                 </div>
                 </div>
             </section>
+            
             <section className="shop spad">
                 {/* start shop page */}
                 <div className="container">
@@ -139,10 +164,12 @@ export default function Shop(){
                             <div className="col-lg-6 col-md-6 col-sm-6">
                                 <div className="shop__product__option__right">
                                 <p>Sort by Price:</p>
-                                <select>
-                                    <option value>Low To High</option>
-                                    <option value>$0 - $55</option>
-                                    <option value>$55 - $100</option>
+                                <select value={filter} onChange={filterByPriceStatus}>
+                                    <option value="">-- Select Filter Price --</option>
+                                    <option value="minSalePrice">Min Sale Price : $0 - $150</option>
+                                    <option value="maxSalePrice">Max Sale Price : $150 - $2000</option>
+                                    <option value="minregularPrice">Min Regular Price : $0 - $150</option>
+                                    <option value="maxregularPrice">Max Regular Price : $150 - $2000</option>
                                 </select>
                                 </div>
                             </div>
@@ -164,12 +191,10 @@ export default function Shop(){
                                     <ul className="product__hover">
                                         <li>
                                             <a href="#" onClick={() => handleAddToWishlist(product.id)}>
-                                                {wishlist[product.id] ? <img src="img/icon/red-heart.png" alt /> : <img src="img/icon/heart.png" alt />}
+                                                {wishlist[product.id] ? <i className="far fa-heart text-danger"></i> : <i className="far fa-heart"></i>}
                                             </a>
                                         </li>
-                                        {/* <li><a href="#"><img src="img/icon/compare.png" alt /> <span>Compare</span></a>
-                                        </li> */}
-                                        <li><Link to={`/shop/product_detail/${product.id}`}><img src="img/icon/search.png" alt /></Link></li>
+                                        <li><Link to={`/shop/product_detail/${product.id}`}><i className="fas fa-search"></i></Link></li>
                                     </ul>
                                     </div>
                                     <div className="product__item__text">
@@ -191,23 +216,11 @@ export default function Shop(){
                                                 <span>${product.regularPrice ? product.regularPrice.toFixed(2) : 'N/A' }</span>
                                             </>
                                             :
-                                            <>
-                                                ${product.regularPrice ? product.regularPrice.toFixed(2) : 'N/A' }
-                                            </>
+                                            <> ${product.regularPrice ? product.regularPrice.toFixed(2) : 'N/A' } </>
                                         }
                                         
                                     </h5>
-                                    <div className="product__color__select">
-                                        <label htmlFor="pc-4">
-                                        <input type="radio" id="pc-4" />
-                                        </label>
-                                        <label className="active black" htmlFor="pc-5">
-                                        <input type="radio" id="pc-5" />
-                                        </label>
-                                        <label className="grey" htmlFor="pc-6">
-                                        <input type="radio" id="pc-6" />
-                                        </label>
-                                    </div>
+                                   
                                     </div>
                                 </div>
                             </div>

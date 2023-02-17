@@ -101,7 +101,7 @@ export default function MyDashboard(){
                   <div className="row">
                     <div className="col-xs-8 text-left">
                       <span className="icon-stat-label">Total Purchase</span>
-                      <span className="icon-stat-value">{total_purchase.totalPurchased}</span>
+                      <span className="icon-stat-value">{total_purchase.totalPurchased ? total_purchase.totalPurchased : 0}</span>
                     </div>
                     <div className="col-xs-4 text-center">
                       <i className="fa-solid fa-cash-register icon-stat-visual bg-danger" />
@@ -162,8 +162,8 @@ export default function MyDashboard(){
               <>
                 <div className="row mt-4">
                   <div className="col-xl-12">
-                    <Table table striped bordered hover className="text-center">
-                      <thead>
+                    <table className="text-center table table-striped table-hover table-bordered">
+                      <thead className="table-light">
                         <tr>
                           <th>ID</th>
                           <th>SubTotal</th>
@@ -207,7 +207,7 @@ export default function MyDashboard(){
 
                         
                       </tbody>
-                    </Table>
+                    </table>
                   </div>
                 </div>
               </>

@@ -9,6 +9,7 @@ import Product from "./../components/Product";
 export default function HomePage(){
     return(
         <div>
+            {/* Componenets */}
             <Sliders/>
             <Banner/>
             <NewArrival/>

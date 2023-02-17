@@ -13,6 +13,7 @@ export default function MenuNavbar({ click }) {
       .then(res => setCompanys(res.data))
       .catch(err => console.log(err))
   }, []);
+  
   useEffect(() => {
     axios.get('http://localhost:5000/api/v1/categories')
       .then(res => setCategories(res.data))
@@ -55,43 +56,43 @@ export default function MenuNavbar({ click }) {
       <div>
         {/* Offcanvas Menu Begin */}
         <div className="offcanvas-menu-overlay" />
-        <div className="offcanvas-menu-wrapper">
-          <div className="offcanvas__option">
-            <div className="offcanvas__links">
-              <a href="#">Sign in</a>
-              <a href="#">FAQs</a>
+          <div className="offcanvas-menu-wrapper">
+            <div className="offcanvas__option">
+              <div className="offcanvas__links">
+                <a href="#">Sign in</a>
+                <a href="#">FAQs</a>
+              </div>
+              <div className="offcanvas__top__hover">
+                <span>
+                  Usd <i className="arrow_carrot-down" />
+                </span>
+                <ul>
+                  0.00
+                  <li>USD</li>
+                  <li>EUR</li>
+                  <li>USD</li>
+                </ul>
+              </div>
             </div>
-            <div className="offcanvas__top__hover">
-              <span>
-                Usd <i className="arrow_carrot-down" />
-              </span>
-              <ul>
-                0.00
-                <li>USD</li>
-                <li>EUR</li>
-                <li>USD</li>
-              </ul>
+            <div className="offcanvas__nav__option">
+              <a href="#" className="search-switch">
+                <img src="img/icon/search.png"   />
+              </a>
+              <a href="#">
+                <img src="img/icon/heart.png"   />
+              </a>
+              <a href="#">
+                <img src="img/icon/cart.png"   /> <span>0</span>
+              </a>
+              <div className="price">$0.00</div>
+            </div>
+            <div id="mobile-menu-wrap" />
+            <div className="offcanvas__text">
+              <p>Free shipping, 30-day return or refund guarantee.</p>
             </div>
           </div>
-          <div className="offcanvas__nav__option">
-            <a href="#" className="search-switch">
-              <img src="img/icon/search.png" alt />
-            </a>
-            <a href="#">
-              <img src="img/icon/heart.png" alt />
-            </a>
-            <a href="#">
-              <img src="img/icon/cart.png" alt /> <span>0</span>
-            </a>
-            <div className="price">$0.00</div>
-          </div>
-          <div id="mobile-menu-wrap" />
-          <div className="offcanvas__text">
-            <p>Free shipping, 30-day return or refund guarantee.</p>
-          </div>
+          {/* Offcanvas Menu End */}
         </div>
-        {/* Offcanvas Menu End */}
-      </div>
 
       <div className="container">
         <div className="row">
@@ -116,13 +117,9 @@ export default function MenuNavbar({ click }) {
                   <ul className="dropdown">
                     {categories && categories.map(category => (
                       <li key={category._id}>
-                        <NavLink to="/aboutus">{category.name}</NavLink></li>
+                        <NavLink to={`/shop/product_category/${category._id}`}>{category.name}</NavLink></li>
                     ))}
-                    {/* <NavLink to="/aboutus">About Us</NavLink>
-                      <li><NavLink to="/productdetail">Shop Details</NavLink></li>
-                      <li><NavLink to="/cart">Shopping Cart</NavLink></li>
-                      <li><NavLink to="/checkout">Check Out</NavLink></li>
-                      <li><NavLink to="/blogdetail">Blog Details</NavLink></li> */}
+                    
                   </ul>
                 </li>
                 <li>
@@ -152,8 +149,8 @@ export default function MenuNavbar({ click }) {
                     <img src={user.user.image} style={{ width: "30px", height: "30px" }} className="rounded-circle  border broder-5 border-danger" />
                     <div className="user-dropdown">
                       <ul>
-                        <li><Link to="/my-dashboard">My Dashboard<i class="fas fa-home ms-2"></i></Link> </li>
-                        <li><Link to="/my-account">My Account<i class="fas fa-crown ms-2"></i></Link> </li>
+                        <li><NavLink to="/my-dashboard">My Dashboard<i class="fas fa-home ms-2"></i></NavLink> </li>
+                        <li><NavLink to="/my-account">My Account<i class="fas fa-crown ms-2"></i></NavLink> </li>
                         <li><Link onClick={() => { logout(); }}>Logout<i class="fas fa-door-open ms-2"></i></Link> </li>
                       </ul>
                     </div>

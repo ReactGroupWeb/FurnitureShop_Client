@@ -1,9 +1,21 @@
-import React from "react";
-import {Link} from 'react-router-dom'
+import React, { useState, useEffect } from "react";
+import {Link} from 'react-router-dom';
+import axios from "axios";
+import Card from "react-bootstrap/Card";
 
 export default function AboutUs(){
+
+    const [userAdmin, setUserAdmin] = useState([]);
+
+    useEffect(() => {
+        axios.get('http://localhost:5000/api/v1/users/get/user-admin')
+        .then(res => setUserAdmin(res.data))
+        .catch(err => console.log(err));
+    },[]);
+
     return(
         <div>
+            {/* BreaadCrumb */}
             <section className="breadcrumb-option">
                 <div className="container">
                 <div className="row">
@@ -19,12 +31,13 @@ export default function AboutUs(){
                 </div>
                 </div>
             </section>
+
             <section className="about spad">
                 <div className="container">
                 <div className="row">
                     <div className="col-lg-12">
                     <div className="about__pic">
-                        <img src="img/about/about-us.jpg" alt />
+                        <img src="img/about/about-us.jpg"   />
                     </div>
                     </div>
                 </div>
@@ -64,7 +77,7 @@ export default function AboutUs(){
                         </p>
                         <div className="testimonial__author">
                         <div className="testimonial__author__pic">
-                            <img src="img/about/testimonial-author.jpg" alt />
+                            <img src="img/about/testimonial-author.jpg"   />
                         </div>
                         <div className="testimonial__author__text">
                             <h5>Augusta Schultz</h5>
@@ -129,34 +142,18 @@ export default function AboutUs(){
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-lg-3 col-md-6 col-sm-6">
-                    <div className="team__item">
-                        <img src="img/about/team-1.jpg" alt />
-                        <h4>John Smith</h4>
-                        <span>Fashion Design</span>
-                    </div>
-                    </div>
-                    <div className="col-lg-3 col-md-6 col-sm-6">
-                    <div className="team__item">
-                        <img src="img/about/team-2.jpg" alt />
-                        <h4>Christine Wise</h4>
-                        <span>C.E.O</span>
-                    </div>
-                    </div>
-                    <div className="col-lg-3 col-md-6 col-sm-6">
-                    <div className="team__item">
-                        <img src="img/about/team-3.jpg" alt />
-                        <h4>Sean Robbins</h4>
-                        <span>Manager</span>
-                    </div>
-                    </div>
-                    <div className="col-lg-3 col-md-6 col-sm-6">
-                    <div className="team__item">
-                        <img src="img/about/team-4.jpg" alt />
-                        <h4>Lucy Myers</h4>
-                        <span>Delivery</span>
-                    </div>
-                    </div>
+
+                    {userAdmin.map((user) => (
+                        <div className="col-lg-3 col-md-6 col-sm-6" key={user._id}>
+                            <Card style={{ border: "none" }}>
+                                <Card.Img src={user.image} style={{ height: "360px", objectFit: "cover", maxHeight: "360px" }} />
+                                <Card.Body className="text-start px-0 py-4">
+                                    <Card.Title as="h4" style={{ color: "#111111 !important", fontWeight: "700" }} > {user.name}</Card.Title>
+                                    <Card.Text>{user.isAdmin === true ? "Admin": ""}</Card.Text>
+                                </Card.Body>
+                            </Card>
+                        </div>
+                    ))}
                 </div>
                 </div>
             </section>
@@ -172,28 +169,28 @@ export default function AboutUs(){
                 </div>
                 <div className="row">
                     <div className="col-lg-3 col-md-4 col-sm-4 col-6">
-                    <a href="#" className="client__item"><img src="img/clients/client-1.png" alt /></a>
+                    <a href="#" className="client__item"><img src="img/clients/client-1.png"   /></a>
                     </div>
                     <div className="col-lg-3 col-md-4 col-sm-4 col-6">
-                    <a href="#" className="client__item"><img src="img/clients/client-2.png" alt /></a>
+                    <a href="#" className="client__item"><img src="img/clients/client-2.png"   /></a>
                     </div>
                     <div className="col-lg-3 col-md-4 col-sm-4 col-6">
-                    <a href="#" className="client__item"><img src="img/clients/client-3.png" alt /></a>
+                    <a href="#" className="client__item"><img src="img/clients/client-3.png"   /></a>
                     </div>
                     <div className="col-lg-3 col-md-4 col-sm-4 col-6">
-                    <a href="#" className="client__item"><img src="img/clients/client-4.png" alt /></a>
+                    <a href="#" className="client__item"><img src="img/clients/client-4.png"   /></a>
                     </div>
                     <div className="col-lg-3 col-md-4 col-sm-4 col-6">
-                    <a href="#" className="client__item"><img src="img/clients/client-5.png" alt /></a>
+                    <a href="#" className="client__item"><img src="img/clients/client-5.png"   /></a>
                     </div>
                     <div className="col-lg-3 col-md-4 col-sm-4 col-6">
-                    <a href="#" className="client__item"><img src="img/clients/client-6.png" alt /></a>
+                    <a href="#" className="client__item"><img src="img/clients/client-6.png"   /></a>
                     </div>
                     <div className="col-lg-3 col-md-4 col-sm-4 col-6">
-                    <a href="#" className="client__item"><img src="img/clients/client-7.png" alt /></a>
+                    <a href="#" className="client__item"><img src="img/clients/client-7.png"   /></a>
                     </div>
                     <div className="col-lg-3 col-md-4 col-sm-4 col-6">
-                    <a href="#" className="client__item"><img src="img/clients/client-8.png" alt /></a>
+                    <a href="#" className="client__item"><img src="img/clients/client-8.png"   /></a>
                     </div>
                 </div>
                 </div>

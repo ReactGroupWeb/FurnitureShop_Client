@@ -1,6 +1,6 @@
 .login-form{
   object-fit: fill;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -35,3 +35,42 @@
       border-bottom-right-radius: .3rem;
     }
   }
+
+  /* .login-form{
+    object-fit: fill;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+    background-color: #fff !important;
+    width: 100%;
+    min-height: 100vh;
+    float: left;
+    transform: translate(-50%,-50%);
+    padding: 50px 0px 0px 0px;
+    overflow: hidden;
+  }
+  
+  .btn-color{
+    background-color: #0e1c36 !important;
+    color: #fff !important;
+    
+  }
+  
+  .profile-image-pic{
+    height: 200px;
+    width: 250px;
+    object-fit: cover;
+  }
+  
+  
+  
+  .cardbody-color{
+    background-color: #ebf2fa;
+  }
+  
+  a{
+    text-decoration: none;
+  } */

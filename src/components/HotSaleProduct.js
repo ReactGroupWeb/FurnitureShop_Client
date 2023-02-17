@@ -153,10 +153,10 @@ export default function HotSaleProduct() {
                                     <ul className="product__hover">
                                         <li>
                                             <a href="#" onClick={() => handleAddToWishlist(hot_product.id)}>
-                                                {wishlist[hot_product.id] ? <img src="img/icon/red-heart.png" alt /> : <img src="img/icon/heart.png" alt />}
+                                                {wishlist[hot_product.id] ? <img src="img/icon/red-heart.png"   /> : <img src="img/icon/heart.png"   />}
                                             </a>
                                         </li>
-                                        <li><Link to={`/shop/product_detail/${hot_product.id}`}><img src="img/icon/search.png" alt /></Link></li>
+                                        <li><Link to={`/shop/product_detail/${hot_product.id}`}><img src="img/icon/search.png"   /></Link></li>
 
                                     </ul>
                                 </div>

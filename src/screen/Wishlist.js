@@ -115,10 +115,10 @@ export default function Wishlist() {
                                                 <ul className="product__hover">
                                                     <li>
                                                         <a href="#" onClick={() => handleAddToWishlist(wishlistItem.id)}>
-                                                            {wishlist[wishlistItem.id] ? <img src="img/icon/trash-bin.png" alt /> : <img src="img/icon/trash-bin.png" alt />}
+                                                            {wishlist[wishlistItem.id] ? <img src="img/icon/trash-bin.png"   /> : <img src="img/icon/trash-bin.png"   />}
                                                         </a>
                                                     </li>
-                                                    <li><Link to={`/shop/product_detail/${wishlistItem.product.id}`}><img src="img/icon/search.png" alt /></Link></li>
+                                                    <li><Link to={`/shop/product_detail/${wishlistItem.product.id}`}><img src="img/icon/search.png"   /></Link></li>
 
                                                 </ul>
                                             </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import './style/banner.css';
+import { Link } from "react-router-dom";
 
 export default function Banner(){
 
@@ -30,12 +31,12 @@ export default function Banner(){
                 
                 {produdct_category.map(productCategory =>(
                
-                    <div key={productCategory.id}  className="col-md-4 col-12 mb-md-0 mb-3">
+                    <div key={productCategory._id}  className="col-md-4 col-12 mb-md-0 mb-3">
                         <div className="card h-100 border border-5 border-secondary">
                             <img src={productCategory.icon} className="card-img-top"  width="180"/>
                             <div className="card-body text-center py-5">
                                 <h2 className="card-title">{productCategory.name}</h2>
-                                <a href="#" className="card-link">Shop now</a>                            
+                                <Link to={`/shop/product_category/${productCategory._id}`} className="card-link">Shop now</Link>
                             </div>
                         </div>
                     </div>
