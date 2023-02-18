@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useParams } from 'react-router-dom'
 import axios from "axios";
 import Sidebar from '../components/Sidebar';
@@ -8,13 +8,46 @@ import Pagination from '../components/Pagination';
 export default function ProductCategory(){
    
     const [products, setProducts]= useState([]);
+
+    // sort product filter
+    const [filter, setFilter] = useState("");
+
+     
+    // set filter by price status
+    const filterByPriceStatus = (e) => {
+        setFilter(e.target.value);
+    }
+
+    // set filter by price value
+    const filterProductByPrice = useMemo(() => { // useMemo is used to filtered products whenever the filter or products state change by clicked
+
+        // if the product is not yet filter by clicked, it shows all the product items
+        if(!filter){
+            return products;
+        }
+
+        return products.filter((product) => {
+            if(filter === "minSalePrice"){
+                return product.salePrice >= 0 && product.salePrice <= 150;
+            }
+            else if(filter === "maxSalePrice"){
+                return product.salePrice > 150 && product.salePrice <= 2000;   
+            }
+            else if(filter === "minRegularPrice"){
+                return product.regularPrice >= 0 && product.regularPrice <= 2000;   
+            }
+            else if(filter === "maxRegularPrice"){
+                return product.regularPrice > 150 && product.regularPrice <= 2000;   
+            }
+        });
+    }, [filter, products]);
     
     // pagination properties
     const [currentPage, setCurrentPage] = useState(1);
     const [itemPerPage] = useState(3);
     const indexOfLastItem = currentPage * itemPerPage;
     const indexOfFirstItem = indexOfLastItem - itemPerPage;
-    const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems = filterProductByPrice.slice(indexOfFirstItem, indexOfLastItem);
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     const prev = () => { setCurrentPage (currentPage - 1)};
     const next = () => { setCurrentPage (currentPage + 1)};
@@ -23,12 +56,10 @@ export default function ProductCategory(){
     const categoryId = params.id;
 
     useEffect(() => {
-        setTimeout(() => {
-            axios.get(`http://localhost:5000/api/v1/products/get/product_category/${categoryId}`)
-            .then(res=> setProducts(res.data))
-            .catch(err => console.log(err))
-        }, 10);
-    });
+        axios.get(`http://localhost:5000/api/v1/products/get/product_category/${categoryId}`)
+        .then(res=> setProducts(res.data))
+        .catch(err => console.log(err))
+    },[products]);
 
     const [cart, setCart] = useState([]);
     const [wishlist, setWishlist] = useState({});
@@ -67,7 +98,6 @@ export default function ProductCategory(){
                     product: productId,
                     instance: 'cart',
                     quantity: proQty
-                
                 });
 
                 // implement the update of substract count_in_stock
@@ -107,7 +137,7 @@ export default function ProductCategory(){
                         <div className="breadcrumb__links">
                         <Link to="/">Home</Link>
                         <Link to="/shop">Shop</Link>
-                        <span>{products && products.name ? products.name : ""}</span>
+                        <span>{(products && products.category) ? products.category.name : ""}</span>
                         </div>
                     </div>
                     </div>
@@ -132,10 +162,12 @@ export default function ProductCategory(){
                             <div className="col-lg-6 col-md-6 col-sm-6">
                                 <div className="shop__product__option__right">
                                 <p>Sort by Price:</p>
-                                <select>
-                                    <option value>Low To High</option>
-                                    <option value>$0 - $55</option>
-                                    <option value>$55 - $100</option>
+                                <select value={filter} onChange={filterByPriceStatus}>
+                                    <option value="">-- Select Filter Price --</option>
+                                    <option value="minSalePrice">Min Sale Price : $0 - $150</option>
+                                    <option value="maxSalePrice">Max Sale Price : $150 - $2000</option>
+                                    <option value="minregularPrice">Min Regular Price : $0 - $150</option>
+                                    <option value="maxregularPrice">Max Regular Price : $150 - $2000</option>
                                 </select>
                                 </div>
                             </div>

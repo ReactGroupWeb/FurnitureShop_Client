@@ -10,23 +10,18 @@ export default function Footer({ click }){
     const [navigate, setNavigate] = useState(false);
     const token = localStorage.getItem("token");
     const user = token ? JSON.parse(token) : "";
-    // const userId = user ? user.user.id : "";
-    
-    useEffect(() =>{
-        axios.get('http://localhost:5000/api/v1/companys')
-        .then(res =>{
-            setCompanys(res.data);
-        })
-        .catch(err => {
-            console.log(err);
-        })
-    }, []);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/v1/categories')
-        .then(res => setCategories(res.data))
+        axios.all([
+            axios.get('http://localhost:5000/api/v1/companys'),
+            axios.get('http://localhost:5000/api/v1/categories')
+        ])
+        .then(axios.spread((companyResponse, categoryResponse) => {
+            setCompanys(companyResponse.data);
+            setCategories(categoryResponse.data);
+        }))
         .catch(err => console.log(err));
-    },[]) ;
+    }, [setCompanys, setCategories]);
 
     const logout = () => {
         if (token) {
@@ -51,35 +46,40 @@ export default function Footer({ click }){
             
             <div className="container">
                 <div className="row">
-                {companys && companys.map(company =>(
+                {companys && companys.map((company) => (
                     <div className="col-lg-3 col-md-6 col-sm-6" key={company._id}>
                         <div className="footer__about text-center">
                             <div className="footer__logo">
-                                <Link to="/" className="text-center"><img src={company.logo}   /></Link>
+                                <Link to="/" className="text-center"> <img src={company.logo} /> </Link>
                             </div>
                             <h3 className="text-light fw-bold">{company.name}</h3>
-                            <p>The customer is at the heart of our unique business model, which includes design.</p>
-                            <p><span><i class="fas fa-envelope me-2"></i></span> <a href="mailto:{company.email}" style={{textDecoration: "none", color: "#fff"}}>{company.email}</a></p>
-                            <p><span><i class="fas fa-phone-square-alt me-2"></i></span> <a href="tel:{company.telephone}" style={{textDecoration: "none", color: "#fff"}}>{company.telephone}</a></p>
-                            <p><span><i class="far fa-map me-2"></i></span> {company.address}</p>
+                            <p className="m-2">
+                                <span> <i className="fas fa-envelope me-2"></i> </span>
+                                <a href="mailto:{company.email}" style={{ textDecoration: "none", color: "#fff" }} > {company.email} </a>
+                            </p>
+                            <p className="m-2">
+                                <span> <i className="fas fa-phone-square-alt me-2"></i> </span>
+                                <a href="tel:{company.telephone}" style={{ textDecoration: "none", color: "#fff" }} > {company.telephone} </a>
+                            </p>
+                            <p><span><i className="far fa-map me-2"></i></span>{company.address}</p>
                         </div>
                     </div>
                 ))}
 
                 
-                    <div className="col-lg-2 offset-lg-1 col-md-3 col-sm-6" >
-                        <div className="footer__widget">
-                        <h6>Useful Links</h6>
-                        <ul>
-                        {categories.map(category => (
-                            <li key={category._id}>
-                                <Link to={`/shop/product_category/${category._id}`} onClick={scrollToTop}>{category.name}</Link>
-                            </li>
-                        ))} 
-                        </ul> 
-                      
-                        </div>
+                <div className="col-lg-2 offset-lg-1 col-md-3 col-sm-6" >
+                    <div className="footer__widget">
+                    <h6>Useful Links</h6>
+                    <ul>
+                    {categories.map(category => (
+                        <li key={category._id}>
+                            <NavLink to={`/shop/product_category/${category._id}`} onClick={scrollToTop}>{category.name}</NavLink>
+                        </li>
+                    ))} 
+                    </ul> 
+                    
                     </div>
+                </div>
                
                 
                 <div className="col-lg-2 col-md-3 col-sm-6">
@@ -109,9 +109,7 @@ export default function Footer({ click }){
                 <div className="col-lg-3 offset-lg-1 col-md-6 col-sm-6">
                     <div className="footer__widget">
                     <h6>Our Shop Location</h6>
-                    <div className="footer__newslatter map">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13274.837857384235!2d104.87147572721516!3d11.564707895998772!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3109519fe4077d69%3A0x20138e822e434660!2sRUPP%20(Royal%20University%20of%20Phnom%20Penh)!5e0!3m2!1sen!2skh!4v1673066052086!5m2!1sen!2skh" height={420} style={{border: 0}} allowFullScreen aria-hidden="false" tabIndex={0} />
-                    </div>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13274.837857384235!2d104.87147572721516!3d11.564707895998772!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3109519fe4077d69%3A0x20138e822e434660!2sRUPP%20(Royal%20University%20of%20Phnom%20Penh)!5e0!3m2!1sen!2skh!4v1673066052086!5m2!1sen!2skh" height={400} style={{border: 0}} allowFullScreen aria-hidden="false" tabIndex={0} />
                     </div>
                 </div>
                 </div>

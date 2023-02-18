@@ -55,7 +55,7 @@ export default function Sidebar() {
                     {/* end filter category*/}
 
                     {/* start filter price*/}
-                    <div className="card">
+                    {/* <div className="card">
                         <div className="card-heading">
                             <a data-toggle="collapse" data-target="#collapseThree">Filter Price</a>
                         </div>
@@ -73,7 +73,7 @@ export default function Sidebar() {
                             </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     {/* end filter price*/}
                     
                    

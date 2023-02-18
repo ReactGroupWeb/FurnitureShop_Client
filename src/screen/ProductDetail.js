@@ -12,6 +12,13 @@ const [product_images, setProductImages] = useState([]);
 const [relatedProducts, setRelatedProducts] = useState([]);
 const productID = params.id;
 
+const [quantity, setQuantity] = useState(1);
+const [cart, setCart] = useState([]);
+const [wishlist, setWishlist] = useState({});
+const token = localStorage.getItem("token");
+const user = token ? JSON.parse(token) : "";
+const userId = user ? user.user.id : "";
+
     useEffect(() => {
         try {
             axios.get(`http://localhost:5000/api/v1/products/${productID}`)
@@ -19,26 +26,81 @@ const productID = params.id;
                 setProduct(res.data);
                 setProductImages(res.data.images);
 
+                // fetch the related product in product detail page through category
                 axios.get(`http://localhost:5000/api/v1/products/get/product_category/${res.data.category._id}`)
                 .then(res => setRelatedProducts(res.data))
                 .catch(err => console.log(err));
             })
-            .catch(err => {
-                console.log(err);
-            });
-            
+            .catch(err =>  console.log(err) );
         } catch (err) { console.log(err); }
         
     }, [productID]);
 
-    // useEffect(() => {
-    //     // fetch the related product by category
-    //     axios.get(`http://localhost:5000/api/v1/products/get/related-product?category=${productByCategory}`)
-    //     .then(res => setRelatedProducts(res.data))
-    //     .catch(err => console.log(err));
-    // });
 
-    // console.log(productByCategory);
+    const handleAddToCart = async (productId, quantity) => {
+        try {
+
+            // get the product data by product id
+            const productResponse = await axios.get(`http://localhost:5000/api/v1/products/${productId}`);
+            const subStractCountInStock = productResponse.data;
+
+            // substract the countInStock of product by 1
+            subStractCountInStock.countInStock -= quantity;
+
+            // get all the data of cart item by each user id
+            const response = await axios.get(`http://localhost:5000/api/v1/shoppingcarts/cart-item/${userId}`);
+            const items = response.data;
+
+            // check the exist cart item that is already exist
+            const existCartItem = items.find(item => item.product._id === productId);
+            if(existCartItem){
+                existCartItem.quantity += parseInt(quantity);
+                await axios.put(`http://localhost:5000/api/v1/shoppingcarts/update-cart/${existCartItem._id}`, {
+                    quantity: existCartItem.quantity
+                });
+
+                // implement the update of substract count_in_stock
+                await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
+            }
+            else{
+                await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
+                    user: userId,
+                    product: productId,
+                    instance: 'cart',
+                    quantity: quantity
+                
+                });
+
+                // implement the update of substract count_in_stock
+                await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
+            }
+
+            setCart(response.data);
+            return cart;
+        } catch (err) { console.log(err) }
+    }
+
+    const handleAddToWishlist = async (productId, qty) => {
+        try {
+            const response = await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
+                user: userId,
+                product: productId,
+                instance: 'wishlist',
+                quantity: qty
+            });
+
+            setWishlist({...wishlist, [productId]: response.data });
+            return response;
+        } catch (err) { console.log(err) }
+    }
+
+    const handleChange = (e) =>{
+        
+        setCart({
+            ...cart, [e.target.quantity]: setQuantity(e.target.value)
+        })
+        
+    }
 
     return (
         <div>
@@ -97,27 +159,30 @@ const productID = params.id;
                                 <div className="product__details__text">
                                     <h4>{product.name}</h4>
                                     <div className="rating">
-                                        <i className="fa fa-star" />
-                                        <i className="fa fa-star" />
-                                        <i className="fa fa-star" />
-                                        <i className="fa fa-star" />
-                                        <i className="fa fa-star-o" />
+                                        {product.rating ? 
+                                            <>
+                                                <i className="fa fa-star star-rating" />
+                                                <i className="fa fa-star star-rating" />
+                                                <i className="fa fa-star star-rating" />
+                                                <i className="fa fa-star star-rating" />
+                                                <i className="fa fa-star star-rating" />
+                                            </>
+                                            :
+                                            <>
+                                                <i className="fa fa-star-o" />
+                                                <i className="fa fa-star-o" />
+                                                <i className="fa fa-star-o" />
+                                                <i className="fa fa-star-o" />
+                                                <i className="fa fa-star-o" />
+                                            </>
+                                        }
                                         <span> - {product.rating} Reviews</span>
 
 
                                     </div>
                                     <h3>
-                                        {product.salePrice && typeof product.salePrice === 'number'
-                                            ? product.salePrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
-                                            : 'N/A'
-                                        }
-
-                                        <span>
-                                            {product.regularPrice && typeof product.regularPrice === 'number'
-                                                ? product.regularPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
-                                                : 'N/A'
-                                            }
-                                        </span>
+                                        ${product.salePrice ? product.salePrice.toFixed(2) : 'N/A' }
+                                        <span> ${product.regularPrice ? product.regularPrice.toFixed(2) : 'N/A' } </span>
                                     </h3>
 
                                     <p>{product.description}</p>
@@ -125,14 +190,14 @@ const productID = params.id;
                                     <div className="product__details__cart__option">
                                         <div className="quantity">
                                             <div className="pro-qty">
-                                                <input type="text" defaultValue={1} />
+                                                <input type="text" value={quantity} onChange = {handleChange}/>
                                             </div>
                                         </div>
-                                        <a href="#" className="primary-btn">add to cart</a>
+                                        <a href="#" className="primary-btn" onClick={() => handleAddToCart(product.id, quantity)}>add to cart</a>
                                     </div>
 
                                     <div className="product__details__btns__option">
-                                        <a href="#"><i className="fa fa-heart" /> add to wishlist</a>
+                                        <a href="#" onClick={() => handleAddToWishlist(product.id, 0)}><i className="fa fa-heart" /> add to wishlist</a>
                                     </div>
                                     
                                     <div className="product__details__last__option">
@@ -303,11 +368,23 @@ const productID = params.id;
                                         <h6>{product.name}</h6>
                                         <a href="#" className="add-cart">+ Add To Cart</a>
                                         <div className="rating">
-                                            <i className="fa fa-star-o" />
-                                            <i className="fa fa-star-o" />
-                                            <i className="fa fa-star-o" />
-                                            <i className="fa fa-star-o" />
-                                            <i className="fa fa-star-o" />
+                                            {product.rating ? 
+                                                <>
+                                                    <i className="fa fa-star star-rating" />
+                                                    <i className="fa fa-star star-rating" />
+                                                    <i className="fa fa-star star-rating" />
+                                                    <i className="fa fa-star star-rating" />
+                                                    <i className="fa fa-star star-rating" />
+                                                </>
+                                                :
+                                                <>
+                                                    <i className="fa fa-star-o" />
+                                                    <i className="fa fa-star-o" />
+                                                    <i className="fa fa-star-o" />
+                                                    <i className="fa fa-star-o" />
+                                                    <i className="fa fa-star-o" />
+                                                </>
+                                            } 
                                         </div>
                                         <h5>
                                             {product.salePrice ?

@@ -10,13 +10,8 @@ export default function Banner(){
     
     useEffect(()=>{
         axios.get("http://localhost:5000/api/v1/categories//get/product_category")
-        .then(res =>{
-            console.log(res);
-            setProductCategory(res.data);
-        })
-        .catch(err =>{
-            console.log(err);
-        })
+        .then(res => setProductCategory(res.data) )
+        .catch(err => console.log(err) )
     }, [])
 
     return(

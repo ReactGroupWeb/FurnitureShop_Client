@@ -13,16 +13,13 @@ export default function Sliders() {
   };
 
   const [sliders, setSliders]= useState([]);
+
   useEffect(() => {
       axios.get("http://localhost:5000/api/v1/sliders/get/enable")
-      .then(res=>{
-          console.log(res);
-          setSliders(res.data);
-      })
-      .catch(err =>{
-          console.log(err);
-      })
+      .then(res=> setSliders(res.data) )
+      .catch(err => console.log(err) )
   }, [])
+  
   const styles = {
     Bslide:{
       backgroundImage:`url(${background})`,

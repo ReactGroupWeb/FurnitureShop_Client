@@ -5,7 +5,7 @@ import Alart from '../services/Alart';
 
 export default function Checkout() {
 
-    const i = 0;
+
     const [cartItem, setCartItem] = useState([]);
     const [clearCart ,setclearCartItem] = useState([]);
     const token = localStorage.getItem("token");
@@ -16,7 +16,7 @@ export default function Checkout() {
         axios.get(`http://localhost:5000/api/v1/shoppingcarts/cart-item/${userId}`)
         .then(res => setCartItem(res.data))
         .catch(err => console.log(err));
-    });
+    }, [cartItem]);
 
     const subTotal = cartItem.reduce((total, item) => total + (item.product.salePrice ? item.product.salePrice : item.product.regularPrice) * item.quantity, 0);
     const taxPrice = subTotal * 0.1;
@@ -51,7 +51,7 @@ export default function Checkout() {
                 orderItems: cartItem.map(item => ({
                     product: item.product.id,
                     quantity: item.quantity
-                })),
+                })),    
                 user: userId,
                 firstname: order.firstname,
                 lastname: order.lastname,
@@ -186,7 +186,7 @@ export default function Checkout() {
                                                     </thead>
                                                     <tbody>
                                                         
-                                                        {cartItem.map((item, i=1) => (
+                                                        {cartItem.map((item, i) => (
                                                             <><tr>
                                                                 <td style={{width: "10px"}}>{i+1}.</td>
                                                                 <td>{item.product.name.length === 12 ? item.product.name : item.product.name.substr(0, 12) + "..."}</td>

@@ -12,75 +12,69 @@ export default function HotSaleProduct() {
 
     useEffect(() => {
         axios.get(`http://localhost:5000/api/v1/products/get/hot_sale_product`)
-            .then(res => {
-                // console.log(res);
-                setHotSaleProduct(res.data);
-            })
-            .catch(err => {
-                console.log(err);
-            })
+            .then(res =>  setHotSaleProduct(res.data) )
+            .catch(err =>  console.log(err) )
     }, []);
 
 
     const [cart, setCart] = useState([]);
-  const [wishlist, setWishlist] = useState({});
-  const token = localStorage.getItem("token");
-  const user = token ? JSON.parse(token) : "";
-  const userId = user ? user.user.id : "";
-
-  console.log(userId);
+    const [wishlist, setWishlist] = useState({});
+    const token = localStorage.getItem("token");
+    const user = token ? JSON.parse(token) : "";
+    const userId = user ? user.user.id : "";
   
-  const handleAddToCart = async (productId, proQty) => {
-      try {
+    const handleAddToCart = async (productId, proQty) => {
+        try {
 
-        const productResponse = await axios.get(`http://localhost:5000/api/v1/products/${productId}`);
-        const subStractCountInStock = productResponse.data;
-        subStractCountInStock.countInStock -= proQty;
+            const productResponse = await axios.get(`http://localhost:5000/api/v1/products/${productId}`);
+            const subStractCountInStock = productResponse.data;
+            subStractCountInStock.countInStock -= proQty;
 
-        // get all the data of cart item by each user id
-        const response = await axios.get(`http://localhost:5000/api/v1/shoppingcarts/cart-item/${userId}`);
-        const items = response.data;
+            // get all the data of cart item by each user id
+            const response = await axios.get(`http://localhost:5000/api/v1/shoppingcarts/cart-item/${userId}`);
+            const items = response.data;
 
-        // check the exist cart item that is already exist
-        const existCartItem = items.find(item => item.product._id === productId);
-        if(existCartItem){
-            existCartItem.quantity += proQty;
-            await axios.put(`http://localhost:5000/api/v1/shoppingcarts/update-cart/${existCartItem._id}`, { quantity: existCartItem.quantity });
+            // check the exist cart item that is already exist
+            const existCartItem = items.find(item => item.product._id === productId);
+            if(existCartItem){
+                existCartItem.quantity += proQty;
+                await axios.put(`http://localhost:5000/api/v1/shoppingcarts/update-cart/${existCartItem._id}`, { quantity: existCartItem.quantity });
 
-            await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
+                await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
+            }
+            else{
+                await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
+                    user: userId,
+                    product: productId,
+                    instance: 'cart',
+                    quantity: proQty
+                });
+
+                await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
+            }
+
+            setCart(response.data);
+            return cart;
+        } catch (err) {
+            console.log(err)
         }
-        else{
-            await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
+    }
+
+    const handleAddToWishlist = async (productId, qty) => {
+        try {
+            const response = await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
                 user: userId,
                 product: productId,
-                instance: 'cart',
-                quantity: proQty
+                instance: 'wishlist',
+                quantity: qty
             });
 
-            await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
+            setWishlist({...wishlist, [productId]: response.data });
+            return response;
+        } catch (err) {
+            console.log(err)
         }
-
-        setCart(response.data);
-        return response;
-      } catch (err) {
-          console.log(err)
-      }
-  }
-
-  const handleAddToWishlist = async (productId) => {
-      try {
-          const response = await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
-              user: userId,
-              product: productId,
-              instance: 'wishlist'
-          });
-
-          setWishlist({...wishlist, [productId]: response.data });
-          return response;
-      } catch (err) {
-          console.log(err)
-      }
-  }
+    }
 
     return (
 
@@ -111,30 +105,30 @@ export default function HotSaleProduct() {
                     renderButtonGroupOutside={false}
                     renderDotsOutside={false}
                     responsive={{
-                    desktop: {
+                      desktop: {
                         breakpoint: {
-                        max: 3000,
-                        min: 1024
+                          max: 3000,
+                          min: 1024,
                         },
                         items: 4,
-                        partialVisibilityGutter: 40
-                    },
-                    mobile: {
+                        partialVisibilityGutter: 40,
+                      },
+                      mobile: {
                         breakpoint: {
-                        max: 464,
-                        min: 0
+                          max: 464,
+                          min: 0,
                         },
                         items: 1,
-                        partialVisibilityGutter: 30
-                    },
-                    tablet: {
+                        partialVisibilityGutter: 30,
+                      },
+                      tablet: {
                         breakpoint: {
-                        max: 1024,
-                        min: 464
+                          max: 1024,
+                          min: 464,
                         },
                         items: 2,
-                        partialVisibilityGutter: 30
-                    }
+                        partialVisibilityGutter: 30,
+                      },
                     }}
                     showDots={true}
                     sliderClass=""
@@ -152,7 +146,7 @@ export default function HotSaleProduct() {
 
                                     <ul className="product__hover">
                                         <li>
-                                            <a href="#" onClick={() => handleAddToWishlist(hot_product.id)}>
+                                            <a href="#" onClick={() => handleAddToWishlist(hot_product.id, 0)}>
                                                 {wishlist[hot_product.id] ? <img src="img/icon/red-heart.png"   /> : <img src="img/icon/heart.png"   />}
                                             </a>
                                         </li>
@@ -166,11 +160,23 @@ export default function HotSaleProduct() {
                                         { hot_product.countInStock === 0 ? 'Add To Cart is not available': '+ Add To Cart'}
                                     </a>
                                     <div className="rating">
-                                        <i className="fa fa-star-o" />
-                                        <i className="fa fa-star-o" />
-                                        <i className="fa fa-star-o" />
-                                        <i className="fa fa-star-o" />
-                                        <i className="fa fa-star-o" />
+                                        {hot_product.rating ? 
+                                            <>
+                                                <i className="fa fa-star star-rating" />
+                                                <i className="fa fa-star star-rating" />
+                                                <i className="fa fa-star star-rating" />
+                                                <i className="fa fa-star star-rating" />
+                                                <i className="fa fa-star star-rating" />
+                                            </>
+                                            :
+                                            <>
+                                                <i className="fa fa-star-o" />
+                                                <i className="fa fa-star-o" />
+                                                <i className="fa fa-star-o" />
+                                                <i className="fa fa-star-o" />
+                                                <i className="fa fa-star-o" />
+                                            </>
+                                        }
                                     </div>
                                     <h5>
                                         {hot_product.salePrice ?
@@ -184,17 +190,6 @@ export default function HotSaleProduct() {
                                             </>
                                         }
                                     </h5>
-                                    <div className="product__color__select">
-                                        <label htmlFor="pc-4">
-                                            <input type="radio" id="pc-4" />
-                                        </label>
-                                        <label className="active black" htmlFor="pc-5">
-                                            <input type="radio" id="pc-5" />
-                                        </label>
-                                        <label className="grey" htmlFor="pc-6">
-                                            <input type="radio" id="pc-6" />
-                                        </label>
-                                    </div>
                                 </div>
                             </div>
                         </div>

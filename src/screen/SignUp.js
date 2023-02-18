@@ -36,80 +36,109 @@ function App() {
 
 
   return (
-    <MDBContainer fluid className='register-form'>
+    <div className="container-fluid register-form">
+      <div
+        className="p-5 bg-image"
+        style={{
+          backgroundImage:
+            "url(https://demos.creative-tim.com/soft-ui-dashboard/assets/img/curved-images/curved14.jpg)",
+          height: "300px",
+          backgroundPosition: "top left ",
+          backgroundSize: "cover",
+        }}
+      ></div>
 
-      <div className="p-5 bg-image" style={{backgroundImage: 'url(https://demos.creative-tim.com/soft-ui-dashboard/assets/img/curved-images/curved14.jpg)', height: '300px', backgroundPosition: 'top left ', backgroundSize: "cover"}}></div>
-
-      <MDBCard className='mx-5 mb-5 p-5 shadow-5' style={{marginTop: '-100px', background: 'hsla(0, 0%, 100%, 0.8)', backdropFilter: 'blur(30px)'}}>
-        <MDBCardBody className='p-5 text-center'>
-
+      <div
+        className="mx-5 mb-5 p-5 shadow-5"
+        style={{
+          marginTop: "-100px",
+          background: "hsla(0, 0%, 100%, 0.8)",
+          backdropFilter: "blur(30px)",
+        }}
+      >
+        <div className="p-5 text-center">
           <h2 className="fw-bold mb-5">Sign up now</h2>
-        {/* <form onSubmit={submit}> */}
+          {/* <form onSubmit={submit}> */}
 
-          
-
-          <MDBRow>
-            <MDBCol col='6'>
-              <MDBInput wrapperClass='mb-4' label='Username' id='form1' type='text' value={user.name}
-                onChange = {(e) => {
+          <div className="row">
+            <div className="col-6">
+              <input
+                className="form-control"
+                id="form1"
+                type="text"
+                value={user.name}
+                onChange={(e) => {
                   setUser({
-                    ...user, 
-                    name: e.target.value
-                  })
+                    ...user,
+                    name: e.target.value,
+                  });
                 }}
               />
-            </MDBCol>
+              <label className="mb-4">Username</label>
+            </div>
 
-            <MDBCol col='6'>
-            <MDBInput wrapperClass='mb-4' label='Email' id='form1' type='email' value={user.email} onChange= {(e) => {
-              setUser({
-                ...user,
-                email: e.target.value
-              });
-            }}/>
-            </MDBCol>
+            <div className="col-6">
+              <input
+                className="form-control"
+                id="form1"
+                type="email"
+                value={user.email}
+                onChange={(e) => {
+                  setUser({
+                    ...user,
+                    email: e.target.value,
+                  });
+                }}
+              />
+              <label className="mb-4">Email</label>
+            </div>
+          </div>
 
-          </MDBRow>
+          <div className="row">
+            <div className="col-6">
+              <input
+                className="form-control"
+                id="form1"
+                type="password"
+                value={user.password}
+                onChange={(e) => {
+                  setUser({
+                    ...user,
+                    password: e.target.value,
+                  });
+                }}
+              />
+              <label className="mb-4">Password</label>
+            </div>
 
-          <MDBRow>
+            <div className="col-6">
+              <input
+                className="form-control"
+                id="form1"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                }}
+              />
+              <label className="mb-4">Confirm Password</label>
+            </div>
+          </div>
 
-            <MDBCol col='6'>
-            <MDBInput wrapperClass='mb-4' label='Password' id='form1' type='password' value={user.password} onChange={(e) => {
-              setUser({
-                ...user,
-                password: e.target.value
-              });
-            }}/>
-            </MDBCol>
-
-            <MDBCol col='6'>
-            <MDBInput wrapperClass='mb-4' label='Confirm Password' id='form1' type='password' value={confirmPassword} onChange={(e) => {
-              setConfirmPassword(e.target.value)
-            }}/>
-            </MDBCol>
-
-          </MDBRow>
-
-          
-
-
-
-
-          <button  class="btn btn-primary btn-block mb-4" onClick={() => submit()}>
+          <button
+            className="btn btn-primary btn-block mb-4"
+            onClick={() => submit()}
+          >
             Sign up
           </button>
           <p className="text-center m-0">
-                Already have an Account? <Link to="/login">Sign In</Link>
+            Already have an Account? <Link to="/login">Sign In</Link>
           </p>
 
-        {/* </form> */}
-
-          
-
-        </MDBCardBody>
-      </MDBCard>
-
-    </MDBContainer>
+          {/* </form> */}
+        </div>
+      </div>
+    </div>
   );
 }
 

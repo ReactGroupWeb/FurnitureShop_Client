@@ -8,12 +8,12 @@ export default function OrderDetail() {
   const [orders , setOrders] = useState([]);
   const params = useParams();
   const orderId = params.id;
-  const i = 0;
+
   useEffect(() => {
     axios.get(`http://localhost:5000/api/v1/orders/${orderId}`)
     .then(res => setOrders(res.data))
     .catch(err => console.log(err));
-  }, []);
+  }, [setOrders]);
 
   return (
     <div>
@@ -128,7 +128,7 @@ export default function OrderDetail() {
                         <tbody>
                            
                             {
-                              orders && orders.orderItems && orders.orderItems.map((item, i=1) => (
+                              orders && orders.orderItems && orders.orderItems.map((item, i) => (
                                 <tr className="checkout__total__products" key={item.id}>
                                     <td style={{width: "10px"}}>0{i+1}.</td>
                                     <td>{item.product.name}</td>

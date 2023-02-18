@@ -37,7 +37,7 @@ export default function AboutUs(){
                 <div className="row">
                     <div className="col-lg-12">
                     <div className="about__pic">
-                        <img src="img/about/about-us.jpg"   />
+                        <img src="img/about/about-banner.jpg"   />
                     </div>
                     </div>
                 </div>

@@ -6,7 +6,7 @@ export default function Cart() {
 
     const [cartItem, setCartItem] = useState([]);
     const [removeSingleCartItem, setRemoveSingleCartItem] = useState([]);
-    const [clearCart, setClearAllCartItem] = useState([]);
+    const [clearAllCart, setClearAllCartItem] = useState([]);
 
     const token = localStorage.getItem("token");
     const user = token ? JSON.parse(token) : "";
@@ -29,6 +29,7 @@ export default function Cart() {
         } catch (err) { 
             console.log(err)
         }
+        return clearAllCart;
     }
 
     const handleRemoveCartItem = async (cartId) => {
@@ -40,6 +41,7 @@ export default function Cart() {
         } catch (err) {
             console.log(err);
         }
+        return removeSingleCartItem;
     }   
 
 

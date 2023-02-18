@@ -4,77 +4,71 @@ import axios from 'axios';
 
 export default function NewArrival () {
     const [products, setProducts]= useState([]);
+    
     useEffect(() => {
         axios.get("http://localhost:5000/api/v1/products/get/new_arrival_product")
-        .then(res=>{
-            // console.log(res);
-            setProducts(res.data);
-        })
-        .catch(err =>{
-            console.log(err);
-        })
+        .then(res=> setProducts(res.data) )
+        .catch(err => console.log(err) )
     }, []);
 
+    const [cart, setCart] = useState([]);
+    const [wishlist, setWishlist] = useState({});
+    const token = localStorage.getItem("token");
+    const user = token ? JSON.parse(token) : "";
+    const userId = user ? user.user.id : "";
 
-  const [cart, setCart] = useState([]);
-  const [wishlist, setWishlist] = useState({});
-  const token = localStorage.getItem("token");
-  const user = token ? JSON.parse(token) : "";
-  const userId = user ? user.user.id : "";
+    const handleAddToCart = async (productId, proQty) => {
+        try {
 
-  console.log(userId);
-  
-  const handleAddToCart = async (productId, proQty) => {
-      try {
+            const productResponse = await axios.get(`http://localhost:5000/api/product/${productId}`);
+            const subStractCountInStock = productResponse.data;
+            subStractCountInStock.countInStock -= proQty;
 
-        const productResponse = await axios.get(`http://localhost:5000/api/product/${productId}`);
-        const subStractCountInStock = productResponse.data;
-        subStractCountInStock.countInStock -= proQty;
+            // get all the data of cart item by each user id
+            const response = await axios.get(`http://localhost:5000/api/v1/shoppingcarts/cart-item/${userId}`);
+            const items = response.data;
 
-        // get all the data of cart item by each user id
-        const response = await axios.get(`http://localhost:5000/api/v1/shoppingcarts/cart-item/${userId}`);
-        const items = response.data;
+            // check the exist cart item that is already exist
+            const existCartItem = items.find((item) => item.product._id === productId);
+            if(existCartItem){
+                existCartItem.quantity += proQty;
+                await axios.put(`http://localhost:5000/api/v1/shoppingcarts/update-cart/${existCartItem._id}`, { quantity: existCartItem.quantity });
 
-        // check the exist cart item that is already exist
-        const existCartItem = items.find(item => item.product._id === productId);
-        if(existCartItem){
-            existCartItem.quantity += proQty;
-            await axios.put(`http://localhost:5000/api/v1/shoppingcarts/update-cart/${existCartItem._id}`, { quantity: existCartItem.quantity });
+                await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
+            }
+            else{
+                await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
+                    user: userId,
+                    product: productId,
+                    instance: 'cart',
+                    quantity: proQty
+                });
 
-            await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
+                await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
+            }
+
+            setCart(response.data);
+            return cart;
+        } catch (err) {
+            console.log(err)
         }
-        else{
-            await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
+    }
+
+    const handleAddToWishlist = async (productId, qty) => {
+        try {
+            const response = await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
                 user: userId,
                 product: productId,
-                instance: 'cart',
-                quantity: proQty
+                instance: 'wishlist',
+                quantity: qty
             });
 
-            await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
+            setWishlist({...wishlist, [productId]: response.data });
+            return response;
+        } catch (err) {
+            console.log(err)
         }
-
-        setCart(response.data);
-        return response;
-      } catch (err) {
-          console.log(err)
-      }
-  }
-
-  const handleAddToWishlist = async (productId) => {
-      try {
-          const response = await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
-              user: userId,
-              product: productId,
-              instance: 'wishlist'
-          });
-
-          setWishlist({...wishlist, [productId]: response.data });
-          return response;
-      } catch (err) {
-          console.log(err)
-      }
-  }
+    }
 
   
 
@@ -94,7 +88,7 @@ export default function NewArrival () {
                     <span className="label bg-dark text-light">New</span>
                         <ul className="product__hover">
                             <li>
-                                <a href="#" onClick={() => handleAddToWishlist(product.id)}>
+                                <a href="#" onClick={() => handleAddToWishlist(product.id, 0)}>
                                     {wishlist[product.id] ? <img src="img/icon/red-heart.png"   /> : <img src="img/icon/heart.png"   />}
                                 </a>
                             </li>
@@ -106,24 +100,25 @@ export default function NewArrival () {
                     <h6>{product.name}</h6>
                     <a href="#" className="add-cart" onClick={() => handleAddToCart(product.id, 1)}>+ Add To Cart</a>
                     <div className="rating">
-                        <i className="fa fa-star-o" />
-                        <i className="fa fa-star-o" />
-                        <i className="fa fa-star-o" />
-                        <i className="fa fa-star-o" />
-                        <i className="fa fa-star-o" />
+                        {product.rating ? 
+                            <>
+                                <i className="fa fa-star star-rating" />
+                                <i className="fa fa-star star-rating" />
+                                <i className="fa fa-star star-rating" />
+                                <i className="fa fa-star star-rating" />
+                                <i className="fa fa-star star-rating" />
+                            </>
+                            :
+                            <>
+                                <i className="fa fa-star-o" />
+                                <i className="fa fa-star-o" />
+                                <i className="fa fa-star-o" />
+                                <i className="fa fa-star-o" />
+                                <i className="fa fa-star-o" />
+                            </>
+                        }
                     </div>
                     <h5>${product.regularPrice.toFixed(2)}</h5>
-                    <div className="product__color__select">
-                        <label htmlFor="pc-4">
-                        <input type="radio" id="pc-4" />
-                        </label>
-                        <label className="active black" htmlFor="pc-5">
-                        <input type="radio" id="pc-5" />
-                        </label>
-                        <label className="grey" htmlFor="pc-6">
-                        <input type="radio" id="pc-6" />
-                        </label>
-                    </div>
                     </div>
                 </div>
             </div>

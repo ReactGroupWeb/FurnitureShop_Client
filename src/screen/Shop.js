@@ -106,24 +106,21 @@ export default function Shop(){
 
             setCart(response.data);
             return cart;
-        } catch (err) {
-            console.log(err)
-        }
+        } catch (err) { console.log(err) }
     }
 
-    const handleAddToWishlist = async (productId) => {
+    const handleAddToWishlist = async (productId, qty) => {
         try {
             const response = await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
                 user: userId,
                 product: productId,
-                instance: 'wishlist'
+                instance: 'wishlist',
+                quantity: qty
             });
 
             setWishlist({...wishlist, [productId]: response.data });
             return response;
-        } catch (err) {
-            console.log(err)
-        }
+        } catch (err) { console.log(err) }
     }
    
 
@@ -190,7 +187,7 @@ export default function Shop(){
                                     
                                     <ul className="product__hover">
                                         <li>
-                                            <a href="#" onClick={() => handleAddToWishlist(product.id)}>
+                                            <a href="#" onClick={() => handleAddToWishlist(product.id, 0)}>
                                                 {wishlist[product.id] ? <i className="far fa-heart text-danger"></i> : <i className="far fa-heart"></i>}
                                             </a>
                                         </li>
@@ -203,11 +200,23 @@ export default function Shop(){
                                         { product.countInStock === 0 ? 'Add To Cart is not available': '+ Add To Cart'}
                                     </a>
                                     <div className="rating">
-                                        <i className="fa fa-star-o" />
-                                        <i className="fa fa-star-o" />
-                                        <i className="fa fa-star-o" />
-                                        <i className="fa fa-star-o" />
-                                        <i className="fa fa-star-o" />
+                                        {product.rating ? 
+                                            <>
+                                                <i className="fa fa-star star-rating" />
+                                                <i className="fa fa-star star-rating" />
+                                                <i className="fa fa-star star-rating" />
+                                                <i className="fa fa-star star-rating" />
+                                                <i className="fa fa-star star-rating" />
+                                            </>
+                                            :
+                                            <>
+                                                <i className="fa fa-star-o" />
+                                                <i className="fa fa-star-o" />
+                                                <i className="fa fa-star-o" />
+                                                <i className="fa fa-star-o" />
+                                                <i className="fa fa-star-o" />
+                                            </>
+                                        }
                                     </div>
                                     <h5>
                                         {product.salePrice ?
@@ -243,10 +252,8 @@ export default function Shop(){
                                               next={next}
                                             />
                                           </div>
-                                        ) : (
-                                          ""
-                                        )
-                                        }
+                                        ) : ("")
+                                }
                                 
                             </div>
                         </div>

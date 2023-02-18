@@ -1,6 +1,16 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 export default function Contact(){
+
+    const [company, setCompany] = useState([]);
+
+    useEffect(() =>{
+        axios.get('http://localhost:5000/api/v1/companys')
+        .then(res => setCompany(res.data))
+        .catch(err => console.log(err));
+    },[]) 
+
     return(
         <div>
             <div className="map">
@@ -18,14 +28,15 @@ export default function Contact(){
                             strict attention.</p>
                         </div>
                         <ul>
-                        <li>
-                            <h4>America</h4>
-                            <p>195 E Parker Square Dr, Parker, CO 801 <br />+43 982-314-0958</p>
-                        </li>
-                        <li>
-                            <h4>France</h4>
-                            <p>109 Avenue Léon, 63 Clermont-Ferrand <br />+12 345-423-9893</p>
-                        </li>
+                            {company.map(com => (
+                                <li key={com._id}>
+                                    <h4>{com.name}</h4>
+                                    <p><i class="fas fa-envelope me-2"></i><a href="mailto:{com.email}" style={{textDecoration: "none", color: "#000"}}>{com.email}</a></p>
+                                    <p><i class="fas fa-phone-square-alt me-2"></i><a href="tel:{com.telephone}" style={{textDecoration: "none", color: "#000"}}>{com.telephone}</a></p>
+                                    <p><i class="far fa-map me-2"></i>{com.address}</p>
+                                </li> 
+                            ))}
+                        
                         </ul>
                     </div>
                     </div>

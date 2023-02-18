@@ -29,6 +29,13 @@
 /*----------------------------------------*/
 /* Template default CSS
 /*----------------------------------------*/
+.star-rating{
+	color: #f7941d !important;
+	padding: 0px 2px;
+}
+.fa-star-o{
+	padding: 0px 2px !important;
+}
 .disabled {
 	pointer-events: none;
 	cursor: not-allowed;
@@ -562,8 +569,13 @@ ol {
 	color: #0d0d0d;
 	font-size: 11px;
 	position: absolute;
-	left: 5px;
-	top: 8px;
+	left: 16px;
+	top: -17px;
+	/* background-color: red; */
+	padding: 2px 7px;
+	border-radius: 50%;
+	color: #fff;
+	font-weight: 700;
 }
 
 .header__nav__option a:last-child {

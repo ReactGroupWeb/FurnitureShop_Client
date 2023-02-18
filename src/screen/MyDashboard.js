@@ -7,23 +7,28 @@ import axios from "axios";
 export default function MyDashboard(){
 
   const [orders, setOrders] = useState([]);
-  const token = localStorage.getItem("token");
-  const user = token ? JSON.parse(token) : "";
-  const userId = user ? user.user.id : "";
-  const i = 0;
   const [total_purchase, setTotal_purchase] = useState([]);
   const [total_delivery, setTotal_delivery] = useState([]);
 
-  
-
+  const token = localStorage.getItem("token");
+  const user = token ? JSON.parse(token) : "";
+  const userId = user ? user.user.id : "";
+ 
   useEffect(() => {
-    setTimeout(() => {
-      axios.get(`http://localhost:5000/api/v1/orders/item-order/${userId}`)
-      .then(res => setOrders(res.data))
+      axios.all([
+        axios.get(`http://localhost:5000/api/v1/orders/item-order/${userId}`),
+        axios.get(`http://localhost:5000/api/v1/orders/total-purchased/${userId}`),
+        axios.get(`http://localhost:5000/api/v1/orders/total-delivery/${userId}`)
+      ])
+      .then(axios.spread((orderResponse, totalPurchasedResponse ,totalDeliveryResponse) => {
+        setOrders(orderResponse.data);
+        setTotal_purchase(totalPurchasedResponse.data);
+        setTotal_delivery(totalDeliveryResponse.data);
+      }))
       .catch(err => console.log(err));
-    }, 1000)
-  });
+  }, [setOrders, setTotal_purchase, setTotal_delivery]);
 
+  
   // update the order status to success
   const updateStatusSuccess = async (orderId) => {
     try {
@@ -37,21 +42,7 @@ export default function MyDashboard(){
     }
   }
   const totalCost = orders.reduce((total, item) => total + (item.status === "Success" && item.totalPrice ? item.totalPrice : 0), 0);
-  useEffect(() => {
-
-      axios.get(`http://localhost:5000/api/v1/orders/total-purchased/${userId}`)
-      .then(res => setTotal_purchase(res.data))
-      .catch(err => console.log(err));
- 
-  },[]);
-
-  useEffect(() => {
-
-      axios.get(`http://localhost:5000/api/v1/orders/total-delivery/${userId}`)
-      .then(res => setTotal_delivery(res.data))
-      .catch(err => console.log(err));
   
-  },[]);
 
 
   return (
@@ -179,7 +170,7 @@ export default function MyDashboard(){
                       </thead>
                       <tbody>
 
-                        {orders.map((item, i=1) => (
+                        {orders.map((item, i) => (
                           <tr key={item.id}>
                             <td>{i+1}</td>
                             <td>${item.subTotal.toFixed(2)}</td>

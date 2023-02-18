@@ -15,53 +15,30 @@ export default function Wishlist() {
         axios.get(`http://localhost:5000/api/v1/shoppingcarts/wishlist-item/${userId}`)
         .then(res => setWishlistItem(res.data))
         .catch(err => console.log(err));
-    });
+    }, [wishlistItems]);
 
-    const handleAddToCart = async (productId, proQty) => {
+    // move wishlist item to shopping carts
+    const handleMoveToCart = async (productId, proQty) => {
         try {
-
-            // get all the data of cart item by each user id
-            const response = await axios.get(`http://localhost:5000/api/v1/shoppingcarts/cart-item/${userId}`);
-            const items = response.data;
-
-            // check the exist cart item that is already exist
-            const existCartItem = items.find(item => item.product._id === productId);
-            if (existCartItem) {
-                existCartItem.quantity += proQty;
-                await axios.put(`http://localhost:5000/api/v1/shoppingcarts/update-cart/${existCartItem._id}`, {
-                    quantity: existCartItem.quantity
-                });
-            }
-            else {
-                await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
-                    user: userId,
-                    product: productId,
-                    instance: 'cart',
-                    quantity: proQty
-
-                });
-            }
-
-            setCart(response.data);
-            return response;
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
-    const handleAddToWishlist = async (productId) => {
-        try {
-            const response = await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
+            const moveToCart = await axios.put(`http://localhost:5000/api/v1/shoppingcarts/move-to-cart/${productId}`, {
                 user: userId,
                 product: productId,
-                instance: 'wishlist'
+                instance: 'cart',
+                quantity: proQty
             });
+            setCart(moveToCart.data);
+            return cart;
+        } catch (err) { console.log(err) }
+        
+    }
 
-            setWishlist({ ...wishlist, [productId]: response.data });
-            return response;
-        } catch (err) {
-            console.log(err)
-        }
+    // remove wishlist item from wishlist page
+    const handleRemoveFromWishlist = async (productId) => {
+        try {
+            const removeWishlsitItem = await axios.delete(`http://localhost:5000/api/v1/shoppingcarts/remove/wishlist-item/${productId}`, cart);
+            setWishlist(removeWishlsitItem.data);
+        } catch (err) { console.log(err) }
+        return wishlist;
     }
 
 
@@ -113,18 +90,13 @@ export default function Wishlist() {
                                                 }
 
                                                 <ul className="product__hover">
-                                                    <li>
-                                                        <a href="#" onClick={() => handleAddToWishlist(wishlistItem.id)}>
-                                                            {wishlist[wishlistItem.id] ? <img src="img/icon/trash-bin.png"   /> : <img src="img/icon/trash-bin.png"   />}
-                                                        </a>
-                                                    </li>
+                                                    <li><a href="#" onClick={() => handleRemoveFromWishlist(wishlistItem.id)}><img src="img/icon/trash-bin.png" /></a></li>
                                                     <li><Link to={`/shop/product_detail/${wishlistItem.product.id}`}><img src="img/icon/search.png"   /></Link></li>
-
                                                 </ul>
                                             </div>
                                             <div className="product__item__text">
                                                 <h6>{wishlistItem.product.name}</h6>
-                                                <a href="#" className="add-cart" onClick={() => handleAddToCart(wishlistItem.id, 1)}>Move To Cart <i className="fas fa-shopping-cart ms-3"></i> </a>
+                                                <a href="#" className="add-cart" onClick={() => handleMoveToCart(wishlistItem.id, 1)}>Move To Cart <i className="fas fa-shopping-cart ms-3"></i> </a>
                                                 <div className="rating">
                                                     <i className="fa fa-star-o" />
                                                     <i className="fa fa-star-o" />

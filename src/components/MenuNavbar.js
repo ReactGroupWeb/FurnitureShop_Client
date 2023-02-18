@@ -8,19 +8,6 @@ export default function MenuNavbar({ click }) {
   const [companys, setCompanys] = useState();
   const [categories, setCategories] = useState([]);
 
-  useEffect(() => {
-    axios.get('http://localhost:5000/api/v1/companys')
-      .then(res => setCompanys(res.data))
-      .catch(err => console.log(err))
-  }, []);
-  
-  useEffect(() => {
-    axios.get('http://localhost:5000/api/v1/categories')
-      .then(res => setCategories(res.data))
-      .catch(err => console.log(err));
-  }, []);
-
-
   const [navigate, setNavigate] = useState(false);
   const token = localStorage.getItem("token");
   const user = token ? JSON.parse(token) : "";
@@ -30,16 +17,23 @@ export default function MenuNavbar({ click }) {
   const [countNumWishlistItem, setCountNumWishlistItem] = useState(0); 
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/v1/shoppingcarts/get/cart_item_count/${userId}`)
-      .then(res => setCountNumCartItem(res.data))
-      .catch(err => console.log(err));
-  });
 
-  useEffect(() => {
-    axios.get(`http://localhost:5000/api/v1/shoppingcarts/get/wishlist_item_count/${userId}`)
-      .then(res => setCountNumWishlistItem(res.data))
+      axios.all([
+        axios.get(`http://localhost:5000/api/v1/companys`),
+        axios.get('http://localhost:5000/api/v1/categories'),
+        token && axios.get(`http://localhost:5000/api/v1/shoppingcarts/get/cart_item_count/${userId}`),
+        token && axios.get(`http://localhost:5000/api/v1/shoppingcarts/get/wishlist_item_count/${userId}`)
+      ].filter(Boolean))
+      .then(axios.spread((companyResponse, categoryResponse, cartResponse, wishlistResponse) => {
+        setCompanys(companyResponse.data);
+        setCategories(categoryResponse.data);
+        token && setCountNumCartItem(cartResponse.data);
+        token && setCountNumWishlistItem(wishlistResponse.data);
+      }))
       .catch(err => console.log(err));
-  }, []);
+ 
+  }, [userId, setCompanys, setCategories, countNumCartItem, countNumWishlistItem]); 
+
 
   const logout = () => {
     if (token) {
@@ -133,42 +127,72 @@ export default function MenuNavbar({ click }) {
           </div>
           <div className="col-lg-3 col-md-3">
             <div className="header__nav__option">
-              <Link to="#" className="search-switch"> <img src="img/icon/search.png" width="22" /> </Link>
+              <Link to="#" className="search-switch"> <i className="fas fa-search" style={{fontSize: "24px", color: "black"}}></i> </Link>
 
               {token ?
-                <>
-                  <Link to="/wishlist">
-                    <img src="img/icon/heart.png" width="22" />
-                    <span style={{ marginLeft: "3px" }}>{countNumWishlistItem ? countNumWishlistItem.countWishlistItem : "0"}</span>
-                  </Link>
-                  <Link to="/cart" className="dropdown open">
-                    <img src="img/icon/cart.png" width="22" />
-                    <span>{countNumCartItem ? countNumCartItem.countCartItem : "0"}</span>
-                  </Link>
-                  <Link to="/" className="dropdown open">
-                    <img src={user.user.image} style={{ width: "30px", height: "30px" }} className="rounded-circle  border broder-5 border-danger" />
-                    <div className="user-dropdown">
-                      <ul>
-                        <li><NavLink to="/my-dashboard">My Dashboard<i class="fas fa-home ms-2"></i></NavLink> </li>
-                        <li><NavLink to="/my-account">My Account<i class="fas fa-crown ms-2"></i></NavLink> </li>
-                        <li><Link onClick={() => { logout(); }}>Logout<i class="fas fa-door-open ms-2"></i></Link> </li>
-                      </ul>
-                    </div>
-                  </Link>
-                </>
+                (
+                  <>
+                    <Link to="/wishlist">
+                      
+                      {
+                        countNumWishlistItem.countWishlistItem ? 
+                          <>
+                            <i className="fas fa-heart" style={{height: "24px", fontSize: "24px" ,  color: "red"}}></i>
+                            <span style={{backgroundColor: "red"}}>{countNumWishlistItem.countWishlistItem}</span>
+                          </>
+                          :
+                          <>
+                            <i className="far fa-heart" style={{fontSize: "22px", color: "black"}}></i>
+                            <span style={{backgroundColor: "black"}}>0</span>
+                          </>
+                          
+                          
+                      }
+                    </Link>
+                    <Link to="/cart">
+                      {
+                        countNumCartItem.countCartItem ? 
+                          <>
+                            <i className="fas fa-shopping-bag" style={{height: "24px", fontSize: "24px" ,  color: "red"}}></i>
+                            <span style={{backgroundColor: "red"}}>{countNumCartItem.countCartItem}</span>
+                          </>
+                          
+                          :
+                          <>
+                            <img src="img/icon/cart.png" width="20" style={{marginTop: "-8px"}}/>
+                            <span style={{backgroundColor: "black"}}>0</span>
+                          </>
+                          
+                      }
+                      
+                    </Link>
+                    <a className="dropdown open">
+                      <img src={user.user.image} style={{ width: "30px", height: "30px", marginTop: "-10px" }} className="rounded-circle  border broder-5 border-danger" />
+                      <div className="user-dropdown">
+                        <ul>
+                          <li><NavLink to="/my-dashboard">My Dashboard<i class="fas fa-home ms-2"></i></NavLink> </li>
+                          <li><NavLink to="/my-account">My Account<i class="fas fa-crown ms-2"></i></NavLink> </li>
+                          <li><Link onClick={() => { logout(); }}>Logout<i class="fas fa-door-open ms-2"></i></Link> </li>
+                        </ul>
+                      </div>
+                    </a>
+                  </> 
+                )
                 :
-                <>
-                  <Link to="/" className="dropdown open">
+                (
+                  <>
+                    <a className="dropdown open">
 
-                    <i className="fas fa-user-circle ms-3 fs-5 my-auto text-dark"></i>
-                    <div className="user-dropdown">
-                      <ul>
-                        <li><Link to="/login" onClick={click}>Sign In<i class="fas fa-sign-in-alt ms-2"></i></Link> </li>
-                        <li><Link to="/sign-up">Sign Up <i class="fas fa-user-plus ms-2"></i></Link> </li>
-                      </ul>
-                    </div>
-                  </Link>
-                </>
+                      <i className="fas fa-user-circle ms-3 fs-5 my-auto text-dark"></i>
+                      <div className="user-dropdown">
+                        <ul>
+                          <li><Link to="/login" onClick={click}>Sign In<i class="fas fa-sign-in-alt ms-2"></i></Link> </li>
+                          <li><Link to="/sign-up">Sign Up <i class="fas fa-user-plus ms-2"></i></Link> </li>
+                        </ul>
+                      </div>
+                    </a>
+                  </>
+                )
               }
             </div>
           </div>
