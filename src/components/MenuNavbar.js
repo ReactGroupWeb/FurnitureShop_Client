@@ -104,7 +104,7 @@ export default function MenuNavbar({ click }) {
             <nav className="header__menu mobile-menu">
               <ul>
                 <li>
-                  <NavLink to="/">Home</NavLink>
+                  <NavLink to="/"><i className="fas fa-home me-2"></i>Home</NavLink>
                 </li>
                 <li>
                   <NavLink to="/shop">Shop</NavLink>
@@ -127,17 +127,16 @@ export default function MenuNavbar({ click }) {
           </div>
           <div className="col-lg-3 col-md-3">
             <div className="header__nav__option">
-              <Link to="#" className="search-switch"> <i className="fas fa-search" style={{fontSize: "24px", color: "black"}}></i> </Link>
 
               {token ?
                 (
                   <>
-                    <Link to="/wishlist">
+                    <a href="/shop/wishlist">
                       
                       {
                         countNumWishlistItem.countWishlistItem ? 
                           <>
-                            <i className="fas fa-heart" style={{height: "24px", fontSize: "24px" ,  color: "red"}}></i>
+                            <i className="fas fa-heart" style={{fontSize: "24px" ,  color: "red"}}></i>
                             <span style={{backgroundColor: "red"}}>{countNumWishlistItem.countWishlistItem}</span>
                           </>
                           :
@@ -148,24 +147,24 @@ export default function MenuNavbar({ click }) {
                           
                           
                       }
-                    </Link>
-                    <Link to="/cart">
+                    </a>
+                    <a href="/shop/cart">
                       {
                         countNumCartItem.countCartItem ? 
                           <>
-                            <i className="fas fa-shopping-bag" style={{height: "24px", fontSize: "24px" ,  color: "red"}}></i>
+                            <i className="fas fa-shopping-bag" style={{fontSize: "24px" ,  color: "red"}}></i>
                             <span style={{backgroundColor: "red"}}>{countNumCartItem.countCartItem}</span>
                           </>
                           
                           :
                           <>
-                            <img src="img/icon/cart.png" width="20" style={{marginTop: "-8px"}}/>
+                            <i className="fas fa-shopping-bag" style={{fontSize: "24px" , color: "black"}}></i>
                             <span style={{backgroundColor: "black"}}>0</span>
                           </>
                           
                       }
                       
-                    </Link>
+                    </a>
                     <a className="dropdown open">
                       <img src={user.user.image} style={{ width: "30px", height: "30px", marginTop: "-10px" }} className="rounded-circle  border broder-5 border-danger" />
                       <div className="user-dropdown">

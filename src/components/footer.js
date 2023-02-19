@@ -71,11 +71,19 @@ export default function Footer({ click }){
                     <div className="footer__widget">
                     <h6>Useful Links</h6>
                     <ul>
-                    {categories.map(category => (
-                        <li key={category._id}>
-                            <NavLink to={`/shop/product_category/${category._id}`} onClick={scrollToTop}>{category.name}</NavLink>
+                        <li><NavLink onClick={scrollToTop} to="/home"><i class="fas fa-home me-2"></i>Home</NavLink> </li>
+                        <li>
+                            
+                            <NavLink onClick={scrollToTop} to="/shop"><i class="fas fa-shopping-cart me-2"></i>Shop</NavLink>
+                            {categories.map(category => (
+                                <li key={category._id} style={{marginLeft: "15px"}}>
+                                    <NavLink to={`/shop/product_category/${category._id}`} onClick={scrollToTop}>{category.name}</NavLink>
+                                </li>
+                            ))} 
                         </li>
-                    ))} 
+                        <li><NavLink onClick={scrollToTop} to="/aboutus"><i class="fas fa-address-card me-2"></i>About US</NavLink> </li>
+                        <li><NavLink onClick={scrollToTop} to="/contact"><i class="fas fa-id-badge me-2"></i>Contact US</NavLink> </li>
+                        
                     </ul> 
                     
                     </div>
@@ -91,8 +99,8 @@ export default function Footer({ click }){
                             <>
                                 <li><NavLink onClick={scrollToTop} to="/my-dashboard"><i class="fas fa-home me-2"></i>My Dashboard</NavLink> </li>
                                 <li><NavLink onClick={scrollToTop} to="/my-account"><i class="fas fa-crown me-2"></i>My Account</NavLink> </li>
-                                <li><NavLink onClick={scrollToTop} to="/cart"><i class="fas fa-shopping-cart me-2"></i>Shopping Cart</NavLink> </li>
-                                <li><NavLink onClick={scrollToTop} to="/wishlist"><i class="fas fa-shopping-bag me-2"></i>Wishlist</NavLink> </li>
+                                <li><NavLink onClick={scrollToTop} to="/shop/cart"><i class="fas fa-shopping-cart me-2"></i>Shopping Cart</NavLink> </li>
+                                <li><NavLink onClick={scrollToTop} to="/shop/wishlist"><i class="fas fa-shopping-bag me-2"></i>Wishlist</NavLink> </li>
                                 <li><NavLink onClick={scrollToTop} to="/checkout"><i class="fas fa-cash-register me-2"></i>Order</NavLink> </li>
                                 <li><Link onClick={() => { logout(); scrollToTop() }}>Logout<i class="fas fa-door-open ms-2"></i></Link> </li>
                             </>

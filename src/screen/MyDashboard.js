@@ -26,7 +26,7 @@ export default function MyDashboard(){
         setTotal_delivery(totalDeliveryResponse.data);
       }))
       .catch(err => console.log(err));
-  }, [setOrders, setTotal_purchase, setTotal_delivery]);
+  }, [orders, setTotal_purchase, setTotal_delivery]);
 
   
   // update the order status to success
@@ -187,10 +187,10 @@ export default function MyDashboard(){
                                 <> <span className="bg-success text-light status-success">Success</span> </>
                               }
                             </td>
-                            {/* <td>{formatDate(item.dateOrdered)}</td> */}
-                            <td>{(new Date(item.dateOrdered)).toLocaleDateString()} | {(new Date(item.dateOrdered)).toLocaleTimeString()} </td>
                             <td>
-                              <Link to={`/order-detail/${item.id}`} className="btn btn-info btn-sm"> <i className="fa-solid fa-eye" /></Link>
+                              {(new Date(item.dateOrdered)).toLocaleDateString('en-Us', {weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'})} | {(new Date(item.dateOrdered)).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hour12: true})} </td>
+                            <td>
+                              <Link to={`/my-dashboard/order-detail/${item.id}`} className="btn btn-info btn-sm"> <i className="fa-solid fa-eye" /></Link>
                               <a href="#" className={item.status === "Success" ? "d-none" : "btn btn-sm btn-success ms-2"} onClick={() => updateStatusSuccess (item.id)}><i className="fas fa-check"></i></a>
                             </td>
                           </tr>

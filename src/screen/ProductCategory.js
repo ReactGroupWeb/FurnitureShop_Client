@@ -59,7 +59,7 @@ export default function ProductCategory(){
         axios.get(`http://localhost:5000/api/v1/products/get/product_category/${categoryId}`)
         .then(res=> setProducts(res.data))
         .catch(err => console.log(err))
-    },[products]);
+    },[]);
 
     const [cart, setCart] = useState([]);
     const [wishlist, setWishlist] = useState({});

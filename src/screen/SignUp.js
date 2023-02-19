@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { MDBBtn, MDBContainer, MDBCard, MDBCardBody, MDBCol, MDBRow, MDBInput, MDBCheckbox, MDBIcon } from 'mdb-react-ui-kit';
 import { Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import Alart from '../services/Alart';
