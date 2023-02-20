@@ -36,6 +36,7 @@ export default function Product() {
               existCartItem.quantity += proQty;
               await axios.put(`http://localhost:5000/api/v1/shoppingcarts/update-cart/${existCartItem._id}`, { quantity: existCartItem.quantity });
 
+              // implement the subStraction of Product Count In Stock
               await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
           }
           else{
@@ -46,6 +47,7 @@ export default function Product() {
                   quantity: proQty
               });
 
+              // implement the subStraction of Product Count In Stock
               await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
           }
 
@@ -70,6 +72,10 @@ export default function Product() {
         } catch (err) {
             console.log(err)
         }
+    }
+
+    const scrollToTop = () => {
+      window.scrollTo(0, 0);
     }
 
     return (
@@ -146,7 +152,7 @@ export default function Product() {
                                 {wishlist[product.id] ? <img src="img/icon/red-heart.png"   /> : <img src="img/icon/heart.png"   />}
                               </a>
                             </li>
-                          <li><Link to={`/shop/product_detail/${product.id}`}><img src="img/icon/search.png"   /></Link></li>
+                          <li><Link to={`/shop/product_detail/${product.id}`} onClick={scrollToTop}><img src="img/icon/search.png"/></Link></li>
 
                         </ul>
                       </div>
@@ -181,24 +187,9 @@ export default function Product() {
                               <span> ${product.regularPrice ? product.regularPrice.toFixed(2) : 'N/A' } </span>
                             </>
                             :
-                            <>
-                              ${product.regularPrice ? product.regularPrice.toFixed(2) : 'N/A' }
-                            </>
-
+                            <>${product.regularPrice ? product.regularPrice.toFixed(2) : 'N/A' }</>
                           }
-
                         </h5>
-                        <div className="product__color__select">
-                          <label htmlFor="pc-4">
-                            <input type="radio" id="pc-4" />
-                          </label>
-                          <label className="active black" htmlFor="pc-5">
-                            <input type="radio" id="pc-5" />
-                          </label>
-                          <label className="grey" htmlFor="pc-6">
-                            <input type="radio" id="pc-6" />
-                          </label>
-                        </div>
                       </div>
                     </div>
                   </div>

@@ -59,7 +59,7 @@ export default function Shop(){
             .catch(err => console.log(err))
         }, 1000) 
     },[filter, currentPage]);
-
+ 
     const [cart, setCart] = useState([]);
     const [wishlist, setWishlist] = useState({});
     const token = localStorage.getItem("token");
@@ -88,7 +88,7 @@ export default function Shop(){
                     quantity: existCartItem.quantity
                 });
 
-                // implement the update of substract count_in_stock
+                // implement the subStraction of Product Count In Stock
                 await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
             }
             else{
@@ -97,10 +97,9 @@ export default function Shop(){
                     product: productId,
                     instance: 'cart',
                     quantity: proQty
-                
                 });
 
-                // implement the update of substract count_in_stock
+                // implement the subStraction of Product Count In Stock
                 await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
             }
 
@@ -121,6 +120,9 @@ export default function Shop(){
             setWishlist({...wishlist, [productId]: response.data });
             return response;
         } catch (err) { console.log(err) }
+    }
+    const scrollToTop = () => {
+        window.scrollTo(0, 0);
     }
    
 
@@ -155,7 +157,7 @@ export default function Shop(){
                             <div className="row">
                             <div className="col-lg-6 col-md-6 col-sm-6">
                                 <div className="shop__product__option__left">
-                                <p>Showing {itemPerPage}–{currentPage} of 126 results</p>
+                                <p>Showing {currentItems.length}-{currentPage} of {products.length} results</p>
                                 </div>
                             </div>
                             <div className="col-lg-6 col-md-6 col-sm-6">
@@ -191,7 +193,7 @@ export default function Shop(){
                                                 {wishlist[product.id] ? <i className="far fa-heart text-danger"></i> : <i className="far fa-heart"></i>}
                                             </a>
                                         </li>
-                                        <li><Link to={`/shop/product_detail/${product.id}`}><i className="fas fa-search"></i></Link></li>
+                                        <li><Link to={`/shop/product_detail/${product.id}`} onClick={scrollToTop}><i className="fas fa-search"></i></Link></li>
                                     </ul>
                                     </div>
                                     <div className="product__item__text">

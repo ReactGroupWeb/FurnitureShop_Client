@@ -6,12 +6,23 @@ import Card from "react-bootstrap/Card";
 export default function AboutUs(){
 
     const [userAdmin, setUserAdmin] = useState([]);
+    const [userClient, setUserClient] = useState(0);
+    const [categories, setCategories] = useState([]);
+
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/v1/users/get/user-admin')
-        .then(res => setUserAdmin(res.data))
+        axios.all([
+            axios.get('http://localhost:5000/api/v1/users/get/user-admin'),
+            axios.get('http://localhost:5000/api/v1/users/get/count'),
+            axios.get('http://localhost:5000/api/v1/categories/get/category-count')
+        ])
+        .then(axios.spread((userAdminResponse, userClientResponse, categoriesResponse) => {
+            setUserAdmin(userAdminResponse.data);
+            setUserClient(userClientResponse.data);
+            setCategories(categoriesResponse.data);
+        }))
         .catch(err => console.log(err));
-    },[]);
+    }, [setUserAdmin, setUserClient, setCategories]);
 
     return(
         <div>
@@ -72,22 +83,21 @@ export default function AboutUs(){
                     <div className="col-lg-6 p-0">
                     <div className="testimonial__text">
                         <span className="icon_quotations" />
-                        <p>“Going out after work? Take your butane curling iron with you to the office, heat it up,
-                        style your hair before you leave the office and you won’t have to make a trip back home.”
+                        <p>“I've just discovered Film and Furniture and am obsessed ! Such a brilliant idea and really , really wonderfully done . It's going to be a regular in my internet browsing activities ... !”
                         </p>
                         <div className="testimonial__author">
                         <div className="testimonial__author__pic">
-                            <img src="img/about/testimonial-author.jpg"   />
+                            <img src="https://i.pinimg.com/564x/73/f1/79/73f179719a2f9e414adfc203240905d6.jpg"   />
                         </div>
                         <div className="testimonial__author__text">
-                            <h5>Augusta Schultz</h5>
-                            <p>Fashion Design</p>
+                            <h5>Christopher Lee</h5>
+                            <p>Civil Enginnering</p>
                         </div>
                         </div>
                     </div>
                     </div>
                     <div className="col-lg-6 p-0">
-                    <div className="testimonial__pic set-bg" data-setbg="img/about/testimonial-pic.jpg" />
+                    <div className="testimonial__pic set-bg" style={{backgroundImage : `url(https://i.pinimg.com/564x/73/f1/79/73f179719a2f9e414adfc203240905d6.jpg)`}}/>
                     </div>
                 </div>
                 </div>
@@ -98,7 +108,7 @@ export default function AboutUs(){
                     <div className="col-lg-3 col-md-6 col-sm-6">
                     <div className="counter__item">
                         <div className="counter__item__number">
-                        <h2 className="cn_num">102</h2>
+                        <h2 className="cn_num">{userClient.userCount}</h2>
                         </div>
                         <span>Our <br />Clients</span>
                     </div>
@@ -106,7 +116,7 @@ export default function AboutUs(){
                     <div className="col-lg-3 col-md-6 col-sm-6">
                     <div className="counter__item">
                         <div className="counter__item__number">
-                        <h2 className="cn_num">30</h2>
+                        <h2 className="cn_num">{categories.countCategory}</h2>
                         </div>
                         <span>Total <br />Categories</span>
                     </div>
@@ -114,7 +124,7 @@ export default function AboutUs(){
                     <div className="col-lg-3 col-md-6 col-sm-6">
                     <div className="counter__item">
                         <div className="counter__item__number">
-                        <h2 className="cn_num">102</h2>
+                        <h2 className="cn_num">1</h2>
                         </div>
                         <span>In <br />Country</span>
                     </div>

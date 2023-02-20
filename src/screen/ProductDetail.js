@@ -102,6 +102,10 @@ const userId = user ? user.user.id : "";
         
     }
 
+    const scrollToTop = () => {
+        window.scrollTo(0, 0);
+    }
+
     return (
         <div>
             <section className="shop-details">
@@ -199,10 +203,19 @@ const userId = user ? user.user.id : "";
                                     <div className="product__details__btns__option">
                                         <a href="#" onClick={() => handleAddToWishlist(product.id, 0)}><i className="fa fa-heart" /> add to wishlist</a>
                                     </div>
-                                    
-                                    <div className="product__details__last__option">
-                                        <h5><span>Guaranteed Safe Checkout</span></h5>
-                                        <img src="img/shop-details/details-payment.png"   />
+                                    <ul className="list-group list-unstyled">
+                                            <li className="fw-bold"><span>SKU:</span> {product.sku}</li>
+                                            <li>
+                                                <span>
+                                                    Categories: 
+                                                </span> 
+                                                <span className="ms-1 fw-bold">
+                                                    {(product && product.category) ? product.category.name : ""}
+                                                </span>
+                                            
+                                            </li>
+                                        </ul>
+                                    {/* <div className="product__details__last__option mt-0">
                                         <ul>
                                             <li><span>SKU:</span> {product.sku}</li>
                                             <li>
@@ -215,7 +228,7 @@ const userId = user ? user.user.id : "";
                                             
                                             </li>
                                         </ul>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>
@@ -361,7 +374,7 @@ const userId = user ? user.user.id : "";
                                         
                                         <ul className="product__hover">
                                             <li><a href="#"><i className="far fa-heart"></i></a></li>
-                                            <li><Link to={`/shop/product_detail/${product._id}`}><i className="fas fa-search"></i></Link></li>
+                                            <li><Link to={`/shop/product_detail/${product._id}`} onClick={scrollToTop}><i className="fas fa-search"></i></Link></li>
                                         </ul>
                                     </div>
                                     <div className="product__item__text">

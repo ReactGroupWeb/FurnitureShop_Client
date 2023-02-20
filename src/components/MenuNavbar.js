@@ -95,7 +95,7 @@ export default function MenuNavbar({ click }) {
             <div className="header__logo">
               {companys && companys.map(company => (
                 <Link to="/" key={company._id}>
-                  <img src={company.logo} width="80" />
+                  <img src={company.logo} className="my-auto" width={110} />
                 </Link>
               ))}
             </div>

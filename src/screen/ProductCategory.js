@@ -59,7 +59,7 @@ export default function ProductCategory(){
         axios.get(`http://localhost:5000/api/v1/products/get/product_category/${categoryId}`)
         .then(res=> setProducts(res.data))
         .catch(err => console.log(err))
-    },[]);
+    },[products]);
 
     const [cart, setCart] = useState([]);
     const [wishlist, setWishlist] = useState({});
@@ -111,12 +111,13 @@ export default function ProductCategory(){
         }
     }
 
-    const handleAddToWishlist = async (productId) => {
+    const handleAddToWishlist = async (productId, qty) => {
         try {
             const response = await axios.post('http://localhost:5000/api/v1/shoppingcarts/add-cart-item', {
                 user: userId,
                 product: productId,
-                instance: 'wishlist'
+                instance: 'wishlist',
+                quantity: qty
             });
 
             setWishlist({...wishlist, [productId]: response.data });
@@ -125,7 +126,10 @@ export default function ProductCategory(){
             console.log(err)
         }
     }
-    
+
+    const scrollToTop = () => {
+        window.scrollTo(0, 0);
+    }
     return(
         <div>
             <section className="breadcrumb-option">
@@ -156,7 +160,7 @@ export default function ProductCategory(){
                             <div className="row">
                             <div className="col-lg-6 col-md-6 col-sm-6">
                                 <div className="shop__product__option__left">
-                                <p>Showing {itemPerPage}–{currentPage} of 126 results</p>
+                                <p>Showing {currentItems.length}-{currentPage} of {products.length} results</p>
                                 </div>
                             </div>
                             <div className="col-lg-6 col-md-6 col-sm-6">
@@ -183,52 +187,53 @@ export default function ProductCategory(){
                              
                                     <div className="product__item__pic set-bg" style={{backgroundImage : `url(${product.image})`}}>
 
-                                        {product.salePrice ? <span className="label text-light bg-dark">sales</span> : " " }
+                                        {product.salePrice ? <p className="label text-light bg-dark float-start">sales</p> : " " }
                                         {product.countInStock >= 0 && product.countInStock <= 20 ?  <p className="float-end text-light bg-danger fw-bold remaining">Remaining: {product.countInStock}</p> : " " }
                                         
                                         <ul className="product__hover">
                                             <li>
-                                                <a href="#" onClick={() => handleAddToWishlist(product._id)}>
+                                                <a href="#" onClick={() => handleAddToWishlist(product._id, 0)}>
                                                     {wishlist[product._id] ? <i className="far fa-heart text-danger"></i> : <i className="far fa-heart"></i>}
                                                 </a>
                                             </li>
-                                            <li><Link to={`/shop/product_detail/${product._id}`}><i className="fas fa-search"></i></Link></li>
+                                            <li><Link to={`/shop/product_detail/${product._id}`}  onClick={scrollToTop}><i className="fas fa-search"></i></Link></li>
                                         </ul>
                                     </div>
                                     <div className="product__item__text">
-                                    <h6>{product.name}</h6>
-                                    <a href="#" className={ product.countInStock === 0 ? 'disabled': 'add-cart'} onClick={() => handleAddToCart(product._id, 1)}>
-                                        { product.countInStock === 0 ? 'Add To Cart is not available': '+ Add To Cart'}
-                                    </a>
-                                    <div className="rating">
-                                        <i className="fa fa-star-o" />
-                                        <i className="fa fa-star-o" />
-                                        <i className="fa fa-star-o" />
-                                        <i className="fa fa-star-o" />
-                                        <i className="fa fa-star-o" />
-                                    </div>
-                                    <h5>
-                                        {product.salePrice ?
-                                            <>
-                                                ${product.salePrice  ? product.salePrice.toFixed(2) : 'N/A' }
-                                                <span>${product.regularPrice ? product.regularPrice.toFixed(2) : 'N/A' }</span>
-                                            </>
-                                            :
-                                            <> ${product.regularPrice ? product.regularPrice.toFixed(2) : 'N/A' } </>
-                                        }
-                                        
-                                    </h5>
-                                    <div className="product__color__select">
-                                        <label htmlFor="pc-4">
-                                        <input type="radio" id="pc-4" />
-                                        </label>
-                                        <label className="active black" htmlFor="pc-5">
-                                        <input type="radio" id="pc-5" />
-                                        </label>
-                                        <label className="grey" htmlFor="pc-6">
-                                        <input type="radio" id="pc-6" />
-                                        </label>
-                                    </div>
+                                        <h6>{product.name}</h6>
+                                        <a href="#" className={ product.countInStock === 0 ? 'disabled': 'add-cart'} onClick={() => handleAddToCart(product._id, 1)}>
+                                            { product.countInStock === 0 ? 'Add To Cart is not available': '+ Add To Cart'}
+                                        </a>
+                                        <div className="rating">
+                                            {product.rating ? 
+                                                <>
+                                                    <i className="fa fa-star star-rating" />
+                                                    <i className="fa fa-star star-rating" />
+                                                    <i className="fa fa-star star-rating" />
+                                                    <i className="fa fa-star star-rating" />
+                                                    <i className="fa fa-star star-rating" />
+                                                </>
+                                                :
+                                                <>
+                                                    <i className="fa fa-star-o" />
+                                                    <i className="fa fa-star-o" />
+                                                    <i className="fa fa-star-o" />
+                                                    <i className="fa fa-star-o" />
+                                                    <i className="fa fa-star-o" />
+                                                </>
+                                            }
+                                        </div>
+                                        <h5>
+                                            {product.salePrice ?
+                                                <>
+                                                    ${product.salePrice  ? product.salePrice.toFixed(2) : 'N/A' }
+                                                    <span>${product.regularPrice ? product.regularPrice.toFixed(2) : 'N/A' }</span>
+                                                </>
+                                                :
+                                                <> ${product.regularPrice ? product.regularPrice.toFixed(2) : 'N/A' } </>
+                                            }
+                                            
+                                        </h5>
                                     </div>
                                 </div>
                             </div>

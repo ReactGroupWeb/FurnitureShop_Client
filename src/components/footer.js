@@ -71,7 +71,7 @@ export default function Footer({ click }){
                     <div className="footer__widget">
                     <h6>Useful Links</h6>
                     <ul>
-                        <li><NavLink onClick={scrollToTop} to="/home"><i class="fas fa-home me-2"></i>Home</NavLink> </li>
+                        <li><NavLink onClick={scrollToTop} to="/"><i class="fas fa-home me-2"></i>Home</NavLink> </li>
                         <li>
                             
                             <NavLink onClick={scrollToTop} to="/shop"><i class="fas fa-shopping-cart me-2"></i>Shop</NavLink>

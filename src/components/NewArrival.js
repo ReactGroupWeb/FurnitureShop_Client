@@ -34,6 +34,7 @@ export default function NewArrival () {
                 existCartItem.quantity += proQty;
                 await axios.put(`http://localhost:5000/api/v1/shoppingcarts/update-cart/${existCartItem._id}`, { quantity: existCartItem.quantity });
 
+                // implement the subStraction of Product Count In Stock
                 await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
             }
             else{
@@ -44,6 +45,7 @@ export default function NewArrival () {
                     quantity: proQty
                 });
 
+                // implement the subStraction of Product Count In Stock
                 await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
             }
 
@@ -70,7 +72,9 @@ export default function NewArrival () {
         }
     }
 
-  
+    const scrollToTop = () => {
+        window.scrollTo(0, 0);
+    }
 
     return(
     <section className="product spad">
@@ -85,14 +89,15 @@ export default function NewArrival () {
             <div key={product.id} className="col-lg-3 col-md-6 col-6">
                 <div className="product__item">
                     <div className="product__item__pic set-bg" style={{backgroundImage : `url(${product.image})`}}>
-                    <span className="label bg-dark text-light">New</span>
+                    <p className="label bg-dark text-light">New</p>
+                    
                         <ul className="product__hover">
                             <li>
                                 <a href="#" onClick={() => handleAddToWishlist(product.id, 0)}>
                                     {wishlist[product.id] ? <img src="img/icon/red-heart.png"   /> : <img src="img/icon/heart.png"   />}
                                 </a>
                             </li>
-                            <li><Link to={`/shop/product_detail/${product.id}`}><img src="img/icon/search.png"   /></Link></li>
+                            <li><Link to={`/shop/product_detail/${product.id}`}  onClick={scrollToTop}><img src="img/icon/search.png"   /></Link></li>
                             
                         </ul>
                     </div>

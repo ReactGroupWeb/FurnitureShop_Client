@@ -40,6 +40,7 @@ export default function HotSaleProduct() {
                 existCartItem.quantity += proQty;
                 await axios.put(`http://localhost:5000/api/v1/shoppingcarts/update-cart/${existCartItem._id}`, { quantity: existCartItem.quantity });
 
+                // implement the subStraction of Product Count In Stock
                 await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
             }
             else{
@@ -50,6 +51,7 @@ export default function HotSaleProduct() {
                     quantity: proQty
                 });
 
+                // implement the subStraction of Product Count In Stock
                 await axios.put(`http://localhost:5000/api/v1/products/update_count_in_stock/${productId}`, subStractCountInStock);
             }
 
@@ -74,6 +76,10 @@ export default function HotSaleProduct() {
         } catch (err) {
             console.log(err)
         }
+    }
+
+    const scrollToTop = () => {
+        window.scrollTo(0, 0);
     }
 
     return (
@@ -150,7 +156,7 @@ export default function HotSaleProduct() {
                                                 {wishlist[hot_product.id] ? <img src="img/icon/red-heart.png"   /> : <img src="img/icon/heart.png"   />}
                                             </a>
                                         </li>
-                                        <li><Link to={`/shop/product_detail/${hot_product.id}`}><img src="img/icon/search.png"   /></Link></li>
+                                        <li><Link to={`/shop/product_detail/${hot_product.id}`} onClick={scrollToTop}><img src="img/icon/search.png"/></Link></li>
 
                                     </ul>
                                 </div>
